@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Dashboard from "../Components/Dashboard";
 import Navbar from "../Components/Navbar";
 import Footer from "../Components/Footer";
@@ -47,6 +47,10 @@ const EmployeHistory = () => {
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+
+  useEffect(() => {
+    
+  }, [])
 
   return (
     <>
