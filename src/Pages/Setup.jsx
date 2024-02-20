@@ -2,35 +2,20 @@ import React, { useEffect, useState } from "react";
 import Dashboard from "../Components/Dashboard";
 import Navbar from "../Components/Navbar";
 import Footer from "../Components/Footer";
+import axios from "axios";
 
 const Setup = () => {
-  const initialFormData = {
-    id: "",
-    id2: "",
-    nature: "",
-    platform: "",
-  };
 
-  const nature = [
-    { id: "", nature: "" },
-  ];
-  const platform = [
-    { id2: "", plat: "" },
-  ];
-  const department = [
-    { id3: "", depart: "" },
-  ];
+  // const [formData, setFormData] = useState(initialFormData);
+  const nature = { id: "", nature: "" };
 
-  const [formData, setFormData] = useState(initialFormData);
-  const [saveFormData, setSaveFormData] = useState([]);
+  const [projectNature, setProjectNature] = useState({ id: "", label: "", value: "" });
+  const [projectPlatform, setProjectPlatform] = useState({ id2: "", label2: "", value2: "" });
+  const [departmentData, setDepartmentData] = useState({ id3: "", label3: "", value3: "" });
 
-  const [projectPlatform, setProjectPlatform] = useState(platform);
-  const [projectNature, setProjectNature] = useState(nature);
-  const [departmentData, setDepartmentData] = useState(department);
-
-  const handleInputChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  // const handleInputChange = (e) => {
+  //   setFormData({ ...formData, [e.target.name]: e.target.value });
+  // };
 
   // const handleAdd = () => {
   //   // console.log("Form data: ", saveFormData);
@@ -59,28 +44,55 @@ const Setup = () => {
     }));
   };
 
-  const handleAdd = () => {
-    setProjectNature((prevData) => ({
-      ...prevData,
-      [prevData.id]: prevData.nature
-    }));
-    console.log("Project nature data updated: ", projectNature);
+  const handleProjNatureSubmit = async () => {
+    try {
+      const response = await axios.post("http://localhost:4000/dropdown/projectNature", {
+        id: projectNature.id,
+        label: projectNature.label,
+        value: projectNature.value
+      });
+      if (response.status === 200 && response.data.success) {
+        console.log('Data posted successfully')
+        console.log(response)
+      }
+      setProjectNature({ id: projectNature.id, label: projectNature.label })
+    } catch (error) {
+      console.log("Error", error)
+    }
   };
 
-  const handleAdd2 = () => {
-    setProjectPlatform((prevData) => ({
-      ...prevData,
-      [prevData.id2]: prevData.plat
-    }));
-    console.log("Project platform data updated: ", projectPlatform);
+  const handleProjPlatSubmit = async () => {
+    try {
+      const response = await axios.post("http://localhost:4000/dropdown/platform", {
+        id: projectPlatform.id2,
+        label: projectPlatform.label2,
+        value: projectPlatform.value2
+      });
+      if (response.status === 200 && response.data.success) {
+        console.log('Data posted successfully')
+        console.log(response)
+      }
+      setProjectPlatform({ id: projectPlatform.id2, label: projectPlatform.label2 })
+    } catch (error) {
+      console.log("Error", error)
+    }
   };
 
-  const handleAdd3 = () => {
-    setDepartmentData((prevData) => ({
-      ...prevData,
-      [prevData.id3]: prevData.depart
-    }));
-    console.log("Department data updated: ", departmentData);
+  const handleProjDepartSubmit = async () => {
+    try {
+      const response = await axios.post("http://localhost:4000/dropdown/department", {
+        id: departmentData.id3,
+        label: departmentData.label3,
+        value: departmentData.value3
+      });
+      if (response.status === 200 && response.data.success) {
+        console.log('Data posted successfully')
+        console.log(response)
+      }
+      setDepartmentData({ id: departmentData.id, label: departmentData.label3 })
+    } catch (error) {
+      console.log("Error", error)
+    }
   };
 
   // useEffect(() => {
@@ -99,7 +111,7 @@ const Setup = () => {
             <div className="pt-10 px-5">
               {/* project nature start */}
               <h1 className="text-3xl font-semibold">Project Nature</h1>
-              <div className="my-7 grid grid-cols-2 lg:grid-cols-3 gap-2">
+              <div className="my-7 grid grid-cols-2 lg:grid-cols-4 gap-2">
                 <div className="mb-3">
                   <label
                     htmlFor="ID"
@@ -120,25 +132,43 @@ const Setup = () => {
                 </div>
                 <div className="mb-3">
                   <label
-                    htmlFor="projectNature"
+                    htmlFor="label"
                     className="block text-sm font-medium leading-6 text-gray-900"
                   >
-                    Nature:
+                    Label:
                   </label>
                   <input
                     type="text"
                     className={
                       "block w-[50%] rounded-md border-0 w-full py-1.5 pl-7 pr-20 text-gray-900 focus:outline-none ring-gray-300 ring-1 ring-inset placeholder:text-gray-400 sm:text-sm sm:leading-6"
                     }
-                    id="projectNature"
-                    name="nature"
-                    value={projectNature.nature}
+                    id="label"
+                    name="label"
+                    value={projectNature.label}
+                    onChange={handleNature}
+                  />
+                </div>
+                <div className="mb-3">
+                  <label
+                    htmlFor="value"
+                    className="block text-sm font-medium leading-6 text-gray-900"
+                  >
+                    Value:
+                  </label>
+                  <input
+                    type="text"
+                    className={
+                      "block w-[50%] rounded-md border-0 w-full py-1.5 pl-7 pr-20 text-gray-900 focus:outline-none ring-gray-300 ring-1 ring-inset placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                    }
+                    id="value"
+                    name="value"
+                    value={projectNature.value}
                     onChange={handleNature}
                   />
                 </div>
                 <div className="text-center">
                   <button
-                    onClick={handleAdd}
+                    onClick={handleProjNatureSubmit}
                     className="text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg"
                   >
                     Add
@@ -149,7 +179,7 @@ const Setup = () => {
 
               {/* Platform start */}
               <h1 className="text-3xl font-semibold">Platform</h1>
-              <div className="my-7 grid grid-cols-2 lg:grid-cols-3 gap-2">
+              <div className="my-7 grid grid-cols-2 lg:grid-cols-4 gap-2">
                 <div className="mb-3">
                   <label
                     htmlFor="id2"
@@ -170,25 +200,43 @@ const Setup = () => {
                 </div>
                 <div className="mb-3">
                   <label
-                    htmlFor="platform"
+                    htmlFor="label2"
                     className="block text-sm font-medium leading-6 text-gray-900"
                   >
-                    Platform:
+                    Label:
                   </label>
                   <input
                     type="text"
                     className={
                       "block w-[50%] rounded-md border-0 w-full py-1.5 pl-7 pr-20 text-gray-900 focus:outline-none ring-gray-300 ring-1 ring-inset placeholder:text-gray-400 sm:text-sm sm:leading-6"
                     }
-                    id="platform"
-                    name="plat"
-                    value={projectPlatform.plat}
+                    id="label2"
+                    name="label2"
+                    value={projectPlatform.label2}
+                    onChange={handlePlatform}
+                  />
+                </div>
+                <div className="mb-3">
+                  <label
+                    htmlFor="value2"
+                    className="block text-sm font-medium leading-6 text-gray-900"
+                  >
+                    Value:
+                  </label>
+                  <input
+                    type="text"
+                    className={
+                      "block w-[50%] rounded-md border-0 w-full py-1.5 pl-7 pr-20 text-gray-900 focus:outline-none ring-gray-300 ring-1 ring-inset placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                    }
+                    id="value2"
+                    name="value2"
+                    value={projectPlatform.value2}
                     onChange={handlePlatform}
                   />
                 </div>
                 <div className="text-center">
                   <button
-                    onClick={handleAdd2}
+                    onClick={handleProjPlatSubmit}
                     className="text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg"
                   >
                     Add
@@ -199,7 +247,7 @@ const Setup = () => {
 
               {/* Department start */}
               <h1 className="text-3xl font-semibold">Department</h1>
-              <div className="my-7 grid grid-cols-2 lg:grid-cols-3 gap-2">
+              <div className="my-7 grid grid-cols-2 lg:grid-cols-4 gap-2">
                 <div className="mb-3">
                   <label
                     htmlFor="id3"
@@ -220,25 +268,43 @@ const Setup = () => {
                 </div>
                 <div className="mb-3">
                   <label
-                    htmlFor="depart"
+                    htmlFor="label3"
                     className="block text-sm font-medium leading-6 text-gray-900"
                   >
-                    Department:
+                    Label:
                   </label>
                   <input
                     type="text"
                     className={
                       "block w-[50%] rounded-md border-0 w-full py-1.5 pl-7 pr-20 text-gray-900 focus:outline-none ring-gray-300 ring-1 ring-inset placeholder:text-gray-400 sm:text-sm sm:leading-6"
                     }
-                    id="depart"
-                    name="depart"
-                    value={departmentData.depart}
+                    id="label3"
+                    name="label3"
+                    value={departmentData.label3}
+                    onChange={handleDepart}
+                  />
+                </div>
+                <div className="mb-3">
+                  <label
+                    htmlFor="value3"
+                    className="block text-sm font-medium leading-6 text-gray-900"
+                  >
+                    Value:
+                  </label>
+                  <input
+                    type="text"
+                    className={
+                      "block w-[50%] rounded-md border-0 w-full py-1.5 pl-7 pr-20 text-gray-900 focus:outline-none ring-gray-300 ring-1 ring-inset placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                    }
+                    id="value3"
+                    name="value3"
+                    value={departmentData.value3}
                     onChange={handleDepart}
                   />
                 </div>
                 <div className="text-center">
                   <button
-                    onClick={handleAdd3}
+                    onClick={handleProjDepartSubmit}
                     className="text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg"
                   >
                     Add

@@ -37,6 +37,8 @@ const HR = () => {
     fetchEmployeeData();
   }, []);
 
+  // console.log("History : ", employeeData.history[-1].department)
+
   const handleSubmit = () => {
     console.log("clicked");
   };
@@ -83,27 +85,25 @@ const HR = () => {
                           {item.name}
                         </td>
                         <td className="p-2 text-start border-b border-gray-300">
-                          {item.department === undefined ? "NaN" : item.department}
+                          {item.history.length > 0 ? item.history[item.history.length - 1].department : "Nan"}
                         </td>
                         <td className="p-2 text-start border-b border-gray-300">
-                          {item.designation === undefined ? "NaN" : item.designation}
+                          {item.history.length > 0 ? item.history[item.history.length - 1].designation : "Nan"}
                         </td>
                         <td className="p-2 text-start border-b border-gray-300">
                           {item.phone}
                         </td>
                         <td className="p-2 text-start border-b border-gray-300">
-                          {item.shift === undefined ? "NaN" : item.shift}
+                          {item.history.length > 0 ? item.history[item.history.length - 1].shift : "Nan"}
                         </td>
                         <td className="p-2 text-center border-b border-gray-300 flex">
-                          <Link to={`/HR/EmployeeDetails/:${item.id}`}>
+                          <Link to={`/HR/EmployeeDetails/${item.id}`}>
                             <Buttons
                               title={"Personal Info"}
                               background={"bg-red-500"}
                             />
                           </Link>
-                          <Link
-                            to={`/HR/EmployeeHistory/:${item.id}/:${item.name}`}
-                          >
+                          <Link to={`/HR/EmployeeHistory/${item.id}`}>
                             <Buttons
                               title={"More Info"}
                               background={"bg-green-500"}

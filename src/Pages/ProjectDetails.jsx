@@ -7,6 +7,7 @@ import axios from "axios";
 import Dropdown from "../Components/Dropdown";
 import Select, { components } from "react-select";
 import { IoIosSend } from "react-icons/io";
+import '../index.css'
 
 const Input = (props) => (
   <components.Input {...props} readOnly={props.selectProps.isReadOnly} />
@@ -18,6 +19,9 @@ const MySelect = (props) => {
 };
 
 const ProjectDetails = () => {
+  const [projectNature, setProjectNature] = useState([{ label: "", value: "" }]);
+  const [platform, setPlatform] = useState([{ label: "", value: "" }]);
+  const [department, setDepartment] = useState([{ label: "", value: "" }]);
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
@@ -48,6 +52,42 @@ const ProjectDetails = () => {
     setEditMode(!editMode);
     console.log(editMode);
   };
+
+  useEffect(() => {
+    const getProjectNature = async () => {
+      try {
+        const response = await axios.get("http://localhost:4000/dropdown/getProjectNature");
+        setProjectNature(response.data.data[0])
+        console.log("Response", response.data.data[0])
+      } catch (error) {
+        console.log("Error in fetching Project Nature", error)
+      }
+    };
+
+    const getPlatform = async () => {
+      try {
+        const response = await axios.get("http://localhost:4000/dropdown/getPlatform");
+        setPlatform(response.data.data[0])
+        console.log("Response", response.data.data[0])
+      } catch (error) {
+        console.log("Error in fetching Project Nature", error)
+      }
+    };
+
+    const getDepartment = async () => {
+      try {
+        const response = await axios.get("http://localhost:4000/dropdown/getDepartment");
+        setDepartment(response.data.data[0])
+        console.log("Response", response.data.data[0])
+      } catch (error) {
+        console.log("Error in fetching Project Nature", error)
+      }
+    };
+
+    getProjectNature();
+    getPlatform();
+    getDepartment();
+  }, [])
 
   return (
     <>
@@ -86,11 +126,10 @@ const ProjectDetails = () => {
                       </label>
                       <input
                         type="number"
-                        className={`block w-[50%] rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 focus:outline-none ${
-                          editMode
-                            ? "ring-gray-300 ring-1 ring-inset"
-                            : "border-b ps-0 font-semibold"
-                        }  placeholder:text-gray-400 sm:text-sm sm:leading-6`}
+                        className={`block w-[50%] rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 focus:outline-none ${editMode
+                          ? "ring-gray-300 ring-1 ring-inset"
+                          : "border-b ps-0 font-semibold"
+                          }  placeholder:text-gray-400 sm:text-sm sm:leading-6`}
                         id="ID"
                         name="id"
                         value={formData.id}
@@ -110,11 +149,10 @@ const ProjectDetails = () => {
                           </label>
                           <input
                             type="date"
-                            className={`block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 focus:outline-none ${
-                              editMode
-                                ? "ring-gray-300 ring-1 ring-inset"
-                                : "border-b ps-0 font-semibold"
-                            }  placeholder:text-gray-400 sm:text-sm sm:leading-6`}
+                            className={`block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 focus:outline-none ${editMode
+                              ? "ring-gray-300 ring-1 ring-inset"
+                              : "border-b ps-0 font-semibold"
+                              }  placeholder:text-gray-400 sm:text-sm sm:leading-6`}
                             id="startDate"
                             name="startDate"
                             value={formData.startDate}
@@ -131,11 +169,10 @@ const ProjectDetails = () => {
                           </label>
                           <input
                             type="text"
-                            className={`block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 focus:outline-none ${
-                              editMode
-                                ? "ring-gray-300 ring-1 ring-inset"
-                                : "border-b ps-0 font-semibold"
-                            }  placeholder:text-gray-400 sm:text-sm sm:leading-6`}
+                            className={`block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 focus:outline-none ${editMode
+                              ? "ring-gray-300 ring-1 ring-inset"
+                              : "border-b ps-0 font-semibold"
+                              }  placeholder:text-gray-400 sm:text-sm sm:leading-6`}
                             id="clientName"
                             name="clientName"
                             value={formData.clientName}
@@ -151,9 +188,9 @@ const ProjectDetails = () => {
                             Platform:
                           </label>
                           <MySelect
-                            options={options}
+                            options={platform}
                             isReadOnly={!editMode}
-                            defaultValue={options[1]}
+                            defaultValue={"Select"}
                           />
                         </div>
                         <div className="mb-3">
@@ -165,11 +202,10 @@ const ProjectDetails = () => {
                           </label>
                           <input
                             type="text"
-                            className={`block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 focus:outline-none ${
-                              editMode
-                                ? "ring-gray-300 ring-1 ring-inset"
-                                : "border-b ps-0 font-semibold"
-                            }  placeholder:text-gray-400 sm:text-sm sm:leading-6`}
+                            className={`block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 focus:outline-none ${editMode
+                              ? "ring-gray-300 ring-1 ring-inset"
+                              : "border-b ps-0 font-semibold"
+                              }  placeholder:text-gray-400 sm:text-sm sm:leading-6`}
                             id="salesPerson"
                             name="salesPerson"
                             value={formData.salesPerson}
@@ -186,11 +222,10 @@ const ProjectDetails = () => {
                           </label>
                           <input
                             type="file"
-                            className={`block w-full rounded-md border-0 pl-2 py-1.5 text-gray-900 focus:outline-none ${
-                              editMode
-                                ? "ring-gray-300 ring-1 ring-inset"
-                                : "border-b ps-0 font-semibold"
-                            }  placeholder:text-gray-400 sm:text-sm sm:leading-6`}
+                            className={`block w-full rounded-md border-0 pl-2 py-1.5 text-gray-900 focus:outline-none ${editMode
+                              ? "ring-gray-300 ring-1 ring-inset"
+                              : "border-b ps-0 font-semibold"
+                              }  placeholder:text-gray-400 sm:text-sm sm:leading-6`}
                             id="attachments"
                             name="attachments"
                             value={formData.attachments}
@@ -211,11 +246,10 @@ const ProjectDetails = () => {
                           </label>
                           <input
                             type="date"
-                            className={`block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 focus:outline-none ${
-                              editMode
-                                ? "ring-gray-300 ring-1 ring-inset"
-                                : "border-b ps-0 font-semibold"
-                            }  placeholder:text-gray-400 sm:text-sm sm:leading-6`}
+                            className={`block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 focus:outline-none ${editMode
+                              ? "ring-gray-300 ring-1 ring-inset"
+                              : "border-b ps-0 font-semibold"
+                              }  placeholder:text-gray-400 sm:text-sm sm:leading-6`}
                             id="delieveryDate"
                             name="delieveryDate"
                             value={formData.deleiveryDate}
@@ -232,11 +266,10 @@ const ProjectDetails = () => {
                           </label>
                           <input
                             type="text"
-                            className={`block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 focus:outline-none ${
-                              editMode
-                                ? "ring-gray-300 ring-1 ring-inset"
-                                : "border-b ps-0 font-semibold"
-                            }  placeholder:text-gray-400 sm:text-sm sm:leading-6`}
+                            className={`block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 focus:outline-none ${editMode
+                              ? "ring-gray-300 ring-1 ring-inset"
+                              : "border-b ps-0 font-semibold"
+                              }  placeholder:text-gray-400 sm:text-sm sm:leading-6`}
                             id="title"
                             name="title"
                             value={formData.title}
@@ -246,15 +279,15 @@ const ProjectDetails = () => {
                         </div>
                         <div className="mb-3">
                           <label
-                            htmlFor="profile"
+                            htmlFor="department"
                             className="block text-sm font-medium leading-6 text-gray-900"
                           >
-                            Profile:
+                            Department:
                           </label>
                           <MySelect
-                            options={options}
+                            options={department}
                             isReadOnly={!editMode}
-                            defaultValue={options[1]}
+                            defaultValue={"Select"}
                           />
                         </div>
                         <div className="mb-3">
@@ -266,11 +299,10 @@ const ProjectDetails = () => {
                           </label>
                           <input
                             type="number"
-                            className={`block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 focus:outline-none ${
-                              editMode
-                                ? "ring-gray-300 ring-1 ring-inset"
-                                : "border-b ps-0 font-semibold"
-                            }  placeholder:text-gray-400 sm:text-sm sm:leading-6`}
+                            className={`block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 focus:outline-none ${editMode
+                              ? "ring-gray-300 ring-1 ring-inset"
+                              : "border-b ps-0 font-semibold"
+                              }  placeholder:text-gray-400 sm:text-sm sm:leading-6`}
                             id="amount"
                             name="amount"
                             value={formData.amount}
@@ -286,9 +318,9 @@ const ProjectDetails = () => {
                             Nature of Work:
                           </label>
                           <MySelect
-                            options={options}
+                            options={projectNature}
                             isReadOnly={!editMode}
-                            defaultValue={options[1]}
+                            defaultValue={"Select"}
                           />
                         </div>
                       </div>
@@ -332,11 +364,10 @@ const ProjectDetails = () => {
                         Description:
                       </label>
                       <textarea
-                        className={`block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 focus:outline-none ${
-                          editMode
-                            ? "ring-gray-300 ring-1 ring-inset"
-                            : "border-b ps-0 font-semibold"
-                        }  placeholder:text-gray-400 sm:text-sm sm:leading-6`}
+                        className={`block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 focus:outline-none ${editMode
+                          ? "ring-gray-300 ring-1 ring-inset"
+                          : "border-b ps-0 font-semibold"
+                          }  placeholder:text-gray-400 sm:text-sm sm:leading-6`}
                         name="description"
                         id="description"
                         value={formData.description}
