@@ -3,15 +3,27 @@ import Dashboard from "../Components/Dashboard";
 import Navbar from "../Components/Navbar";
 import Footer from "../Components/Footer";
 import axios from "axios";
+import WithAuth from "../Components/WithAuth";
 
 const Setup = () => {
-
   // const [formData, setFormData] = useState(initialFormData);
   const nature = { id: "", nature: "" };
 
-  const [projectNature, setProjectNature] = useState({ id: "", label: "", value: "" });
-  const [projectPlatform, setProjectPlatform] = useState({ id2: "", label2: "", value2: "" });
-  const [departmentData, setDepartmentData] = useState({ id3: "", label3: "", value3: "" });
+  const [projectNature, setProjectNature] = useState({
+    id: "",
+    label: "",
+    value: "",
+  });
+  const [projectPlatform, setProjectPlatform] = useState({
+    id2: "",
+    label2: "",
+    value2: "",
+  });
+  const [departmentData, setDepartmentData] = useState({
+    id3: "",
+    label3: "",
+    value3: "",
+  });
 
   // const handleInputChange = (e) => {
   //   setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -26,72 +38,87 @@ const Setup = () => {
   const handleNature = (e) => {
     setProjectNature((prevData) => ({
       ...prevData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     }));
-  }
+  };
 
   const handlePlatform = (e) => {
     setProjectPlatform((prevData) => ({
       ...prevData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     }));
-  }
+  };
 
   const handleDepart = (e) => {
     setDepartmentData((prevData) => ({
       ...prevData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     }));
   };
 
   const handleProjNatureSubmit = async () => {
     try {
-      const response = await axios.post("http://localhost:4000/dropdown/projectNature", {
-        id: projectNature.id,
-        label: projectNature.label,
-        value: projectNature.value
-      });
+      const response = await axios.post(
+        "http://localhost:4000/dropdown/projectNature",
+        {
+          id: projectNature.id,
+          label: projectNature.label,
+          value: projectNature.value,
+        }
+      );
       if (response.status === 200 && response.data.success) {
-        console.log('Data posted successfully')
-        console.log(response)
+        console.log("Data posted successfully");
+        console.log(response);
       }
-      setProjectNature({ id: projectNature.id, label: projectNature.label })
+      setProjectNature({ id: projectNature.id, label: projectNature.label });
     } catch (error) {
-      console.log("Error", error)
+      console.log("Error", error);
     }
   };
 
   const handleProjPlatSubmit = async () => {
     try {
-      const response = await axios.post("http://localhost:4000/dropdown/platform", {
+      const response = await axios.post(
+        "http://localhost:4000/dropdown/platform",
+        {
+          id: projectPlatform.id2,
+          label: projectPlatform.label2,
+          value: projectPlatform.value2,
+        }
+      );
+      if (response.status === 200 && response.data.success) {
+        console.log("Data posted successfully");
+        console.log(response);
+      }
+      setProjectPlatform({
         id: projectPlatform.id2,
         label: projectPlatform.label2,
-        value: projectPlatform.value2
       });
-      if (response.status === 200 && response.data.success) {
-        console.log('Data posted successfully')
-        console.log(response)
-      }
-      setProjectPlatform({ id: projectPlatform.id2, label: projectPlatform.label2 })
     } catch (error) {
-      console.log("Error", error)
+      console.log("Error", error);
     }
   };
 
   const handleProjDepartSubmit = async () => {
     try {
-      const response = await axios.post("http://localhost:4000/dropdown/department", {
-        id: departmentData.id3,
-        label: departmentData.label3,
-        value: departmentData.value3
-      });
+      const response = await axios.post(
+        "http://localhost:4000/dropdown/department",
+        {
+          id: departmentData.id3,
+          label: departmentData.label3,
+          value: departmentData.value3,
+        }
+      );
       if (response.status === 200 && response.data.success) {
-        console.log('Data posted successfully')
-        console.log(response)
+        console.log("Data posted successfully");
+        console.log(response);
       }
-      setDepartmentData({ id: departmentData.id, label: departmentData.label3 })
+      setDepartmentData({
+        id: departmentData.id,
+        label: departmentData.label3,
+      });
     } catch (error) {
-      console.log("Error", error)
+      console.log("Error", error);
     }
   };
 
@@ -323,4 +350,4 @@ const Setup = () => {
   );
 };
 
-export default Setup;
+export default WithAuth(Setup);

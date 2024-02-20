@@ -7,6 +7,7 @@ import Tables from "../Components/Tables";
 import Buttons from "../Components/Buttons";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import WithAuth from "../Components/WithAuth";
 
 const HR = () => {
   const table_head = [
@@ -136,4 +137,4 @@ const HR = () => {
   );
 };
 
-export default HR;
+export default WithAuth(HR);

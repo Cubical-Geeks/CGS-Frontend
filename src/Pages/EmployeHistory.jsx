@@ -4,6 +4,8 @@ import Navbar from "../Components/Navbar";
 import Footer from "../Components/Footer";
 import { useLocation, useParams } from "react-router-dom";
 import axios from "axios";
+import WithAuth from "../Components/WithAuth";
+
 
 const EmployeHistory = () => {
 
@@ -298,4 +300,4 @@ const EmployeHistory = () => {
   );
 };
 
-export default EmployeHistory;
+export default WithAuth(EmployeHistory);

@@ -5,6 +5,8 @@ import Navbar from '../Components/Navbar';
 import Footer from '../Components/Footer';
 import axios from 'axios';
 import Select, { components } from "react-select";
+import WithAuth from '../Components/WithAuth';
+
 
 const Input = (props) => (
     <components.Input {...props} readOnly={props.selectProps.isReadOnly} />
@@ -23,9 +25,9 @@ const MySelect = (props) => {
             options={options}
             value={value}
             onChange={handleChange}
-            menuIsOpen={!isReadOnly && menuIsOpen} // Open menu if not read-only and state is open
-            onMenuOpen={() => setMenuIsOpen(true)} // Open menu when clicked
-            onMenuClose={() => setMenuIsOpen(false)} // Close menu when clicked outside
+            menuIsOpen={!isReadOnly && menuIsOpen} 
+            onMenuOpen={() => setMenuIsOpen(true)} 
+            onMenuClose={() => setMenuIsOpen(false)} 
             components={{ Input }}
         />
     );
@@ -66,7 +68,6 @@ const EmployeeDetails = () => {
     const handleSubmit = async () => {
         try {
             const response = await axios.post("http://localhost:4000/api/employee/submit", {
-                // Ensure formData has all necessary fields
                 id: formData.id,
                 name: formData.Name,
                 joiningDate: formData.joinDate,
@@ -484,4 +485,4 @@ const EmployeeDetails = () => {
     )
 }
 
-export default EmployeeDetails
+export default WithAuth(EmployeeDetails);

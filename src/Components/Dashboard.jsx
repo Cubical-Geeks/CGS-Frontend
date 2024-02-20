@@ -46,27 +46,6 @@ const Dashboard = () => {
         onClick={() => handleItemClick("Setup")}
         to="/Setup"
       />
-      <SidebarItem
-        icon={<Boxes size={20} />}
-        text="Projects"
-        active={selectedItem === "Projects"}
-        onClick={() => handleItemClick("Projects")}
-        to="/Projects"
-      />
-      <SidebarItem
-        icon={<Package size={20} />}
-        text="Orders"
-        active={selectedItem === "Orders"}
-        onClick={() => handleItemClick("Orders")}
-        to="/Orders"
-      />
-      <SidebarItem
-        icon={<IoMdNotifications size={20} />}
-        text="Notifications"
-        active={selectedItem === "Notifications"}
-        onClick={() => handleItemClick("Notifications")}
-        to="/Notifications"
-      />
       <hr className="my-3" />
       <SidebarItem
         icon={<Settings size={20} />}

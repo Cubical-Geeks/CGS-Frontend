@@ -8,6 +8,7 @@ import Dropdown from "../Components/Dropdown";
 import Select, { components } from "react-select";
 import { IoIosSend } from "react-icons/io";
 import '../index.css'
+import WithAuth from "../Components/WithAuth";
 
 const Input = (props) => (
   <components.Input {...props} readOnly={props.selectProps.isReadOnly} />
@@ -448,4 +449,4 @@ const ProjectDetails = () => {
   );
 };
 
-export default ProjectDetails;
+export default WithAuth(ProjectDetails);
