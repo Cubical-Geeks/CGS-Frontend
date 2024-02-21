@@ -1,32 +1,45 @@
-import React, { useState } from 'react'
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 const LoginProduction = () => {
-
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [authError, setAuthError] = useState("");
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('http://localhost:4000/api/productionUser/login', {
-        username: username,
-        password: password
-      });
+      const response = await axios.post(
+        "http://localhost:4000/api/productionUser/login",
+        {
+          username: username,
+          password: password,
+        }
+      );
 
       if (response.status === 200 && response.data.success) {
-        console.log(response)
-        console.log('Login successful');
-        window.location.href = '/WorkspaceProduction';
-      }
-      else {
+        const { accessToken } = response.data.data;
+        if (accessToken) {
+          localStorage.setItem("token", accessToken);
+          console.log("Login successful");
+          window.location.href = "/WorkspaceProduction";
+        } else {
+          setAuthError("Token not provided");
+        }
+      } else {
         setAuthError("User not found");
       }
     } catch (error) {
-      console.error('Error logging in:', error);
+      console.error("Error logging in:", error);
       setAuthError("Error logging in");
     }
   };
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      window.location.href = "/Workspace";
+    }
+  }, []);
 
   return (
     <>
@@ -59,7 +72,10 @@ const LoginProduction = () => {
               />
             </div>
             <div className="relative mb-4">
-              <label htmlFor="password" className="leading-7 text-sm text-gray-600">
+              <label
+                htmlFor="password"
+                className="leading-7 text-sm text-gray-600"
+              >
                 Password
               </label>
               <input
@@ -72,15 +88,20 @@ const LoginProduction = () => {
                 required
               />
             </div>
-            <button onClick={handleLogin} className="text-white bg-indigo-500 border-0 py-2 px-8 w-full focus:outline-none hover:bg-indigo-600 rounded text-lg">
+            <button
+              onClick={handleLogin}
+              className="text-white bg-indigo-500 border-0 py-2 px-8 w-full focus:outline-none hover:bg-indigo-600 rounded text-lg"
+            >
               Sign In
             </button>
-            {authError && <p className="text-xs text-red-500 mt-3">{authError}</p>}
+            {authError && (
+              <p className="text-xs text-red-500 mt-3">{authError}</p>
+            )}
           </div>
         </div>
       </section>
     </>
-  )
-}
+  );
+};
 
-export default LoginProduction
+export default LoginProduction;

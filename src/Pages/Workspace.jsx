@@ -140,53 +140,6 @@ const Workspace = () => {
     fetchingProjects();
   }, []);
 
-  const Grid = ({ children }) => {
-    const [, drop] = useDrop({
-      accept: "PROJECT",
-      drop: (item) => console.log("Dropped:", item),
-    });
-
-    return (
-      <div
-        ref={drop}
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(4, 1fr)",
-          gap: "0.5rem",
-          padding: "1rem",
-          border: "1px solid black",
-        }}
-      >
-        {children}
-      </div>
-    );
-  };
-
-  const Project = ({ name }) => {
-    const [{ isDragging }, drag] = useDrag({
-      item: { type: "PROJECT", name },
-      collect: (monitor) => ({
-        isDragging: !!monitor.isDragging(),
-      }),
-    });
-
-    return (
-      <div
-        ref={drag}
-        style={{
-          opacity: isDragging ? 0.5 : 1,
-          cursor: "move",
-          border: "1px dashed gray",
-          padding: "0.5rem",
-          marginBottom: "0.5rem",
-          backgroundColor: "white",
-        }}
-      >
-        {name}
-      </div>
-    );
-  };
-
   return (
     <>
       <div className="flex">
