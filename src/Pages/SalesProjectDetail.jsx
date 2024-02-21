@@ -5,6 +5,7 @@ import SalesDashboard from '../Components/SalesDashboard'
 import Select, { components } from "react-select";
 import axios from 'axios';
 import { IoIosSend } from 'react-icons/io';
+import SalesAuth from '../Components/SalesAuth';
 
 const Input = (props) => (
     <components.Input {...props} readOnly={props.selectProps.isReadOnly} />
@@ -394,4 +395,4 @@ const SalesProjectDetail = () => {
     )
 }
 
-export default SalesProjectDetail;
+export default SalesAuth(SalesProjectDetail);

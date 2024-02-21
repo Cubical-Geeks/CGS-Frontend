@@ -5,7 +5,7 @@ const SalesAuth = (Component) => {
   return (props) => {
     const token = localStorage.getItem("token");
     if (!token) {
-      return <Navigate to="/ProductionLogin" />;
+      return <Navigate to="/SalesLogin" />;
     }
     return <Component {...props} />;
   };

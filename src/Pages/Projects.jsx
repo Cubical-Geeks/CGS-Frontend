@@ -135,7 +135,7 @@ const Projects = () => {
               <h1 className='text-2xl md:text-3xl lg:text-4xl lg:font-semibold text-slate-500 my-5'>Upload a Project</h1>
               <div>
                 {/* form start */}
-                <form>
+                <form action="/api/projects/submit" method="post" enctype="multipart/form-data">
 
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 text-center lg:text-start">
                     {/* 1 */}
@@ -372,7 +372,7 @@ const Projects = () => {
 
                 {/* submit button */}
                 <div className="flex justify-center my-10">
-                  <button onClick={handleSubmit} className="text-white w-full lg:w-1/3 bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg">
+                  <button type='submit' onClick={handleSubmit} className="text-white w-full lg:w-1/3 bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg">
                     Submit
                   </button>
                 </div>
