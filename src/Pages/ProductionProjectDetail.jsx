@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import Navbar from '../Components/Navbar'
 import Footer from '../Components/Footer'
-import SalesDashboard from '../Components/SalesDashboard'
+import ProductionDashboard from '../Components/ProductionDashboard';
 import Select, { components } from "react-select";
 import axios from 'axios';
 import { IoIosSend } from 'react-icons/io';
-import SalesAuth from '../Components/SalesAuth';
 import api from '../Components/Api';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
-const SalesProjectDetail = () => {
+const ProductionProjectDetail = () => {
+
 
     const { id } = useParams();
 
@@ -97,11 +97,11 @@ const SalesProjectDetail = () => {
 
     return (
         <>
-            <div className='flex'>
+            <div className="flex">
                 <div>
-                    <SalesDashboard />
+                    <ProductionDashboard />
                 </div>
-                <div className='container flex flex-col justify-between'>
+                <div className="container flex flex-col justify-between">
                     <div>
                         <Navbar />
                         <div className='py-5 px-5'>
@@ -673,4 +673,4 @@ const SalesProjectDetail = () => {
     )
 }
 
-export default SalesAuth(SalesProjectDetail);
+export default ProductionProjectDetail;

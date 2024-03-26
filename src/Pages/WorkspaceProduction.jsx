@@ -10,23 +10,34 @@ import { Link } from "react-router-dom";
 import ProductionDashboard from "../Components/ProductionDashboard";
 import axios from "axios";
 import ProductionAuth from "../Components/ProductionAuth";
+import api from "../Components/Api";
 
 const WorkspaceProduction = () => {
-  const [projects, setProjects] = useState([]);
+  const [allotedProjects, setAllotedProjects] = useState([]);
+  const [reviewProjects, setReviewProjects] = useState([]);
+  const [completedProjects, setCompletedProjects] = useState([]);
+  const [progressProjects, setProgressProjects] = useState([]);
 
-  // fetching
+  const fetchingProjects = async () => {
+    try {
+      const response = await axios.get(
+        `${api}/api/projects/get`
+      );
+      const project = response.data.data[0];
+      const allotedProjects = project.filter(item => item.status === "To be Alloted");
+      const progressProjects = project.filter(item => item.status === "In Progress");
+      const reviewProjects = project.filter(item => item.status === "In Review");
+      const completedProjects = project.filter(item => item.status === "Completed");
+      setAllotedProjects(allotedProjects);
+      setProgressProjects(progressProjects);
+      setReviewProjects(reviewProjects);
+      setCompletedProjects(completedProjects);
+    } catch (error) {
+      console.log("Error in fetching projects ", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchingProjects = async () => {
-      try {
-        const response = await axios.get(
-          "http://localhost:4000/api/projects/get"
-        );
-        setProjects(response.data.data[0]);
-        console.log(response.data.data[0]);
-      } catch (error) {
-        console.log("Error in fetching projects ", error);
-      }
-    };
 
     fetchingProjects();
   }, []);
@@ -52,20 +63,17 @@ const WorkspaceProduction = () => {
                       </div>
                     </div>
                   </div>
-                  {projects &&
-                    projects.map((item, index) => (
-                      <div
-                        key={index}
-                        className="border rounded-lg p-3 shadow-lg mb-4 text-black bg-slate-200"
-                      >
+                  {allotedProjects && allotedProjects.map((item, index) => (
+                    <Link key={index} to={`/ProductionProjectDetail/${item.id}`}>
+                      <div className="border rounded-lg p-3 shadow-lg mb-4 text-black bg-slate-200">
                         <h3 className="text-xl mb-2">{item.title}</h3>
                         <h3 className="mb-2">Client : {item.clientName}</h3>
                         <h3 className="font-semibold mb-2">
-                          <span className="text-red-500">Deadline : </span>{" "}
-                          {item.deleiveryDate}
+                          <span className="text-red-500">Deadline : {item.deliveryDate}</span>
                         </h3>
                       </div>
-                    ))}
+                    </Link>
+                  ))}
                 </div>
                 {/* In progress */}
                 <div>
@@ -77,17 +85,21 @@ const WorkspaceProduction = () => {
                       </div>
                     </div>
                   </div>
-                  {/* <div className="border rounded-lg p-3 shadow-lg mb-4 text-black bg-slate-200">
-                                        <h3 className="text-xl mb-2">Project Title</h3>
-                                        <h3 className="text-xl mb-2">Client Name</h3>
-                                        <h3 className="text-xl mb-2">
-                                            Deadline
-                                        </h3>
-                                    </div> */}
+                  {progressProjects && progressProjects.map((item, index) => (
+                    <Link key={index} to={`/ProductionProjectDetail/${item.id}`}>
+                      <div className="border rounded-lg p-3 shadow-lg mb-4 text-black bg-slate-200">
+                        <h3 className="text-xl mb-2">{item.title}</h3>
+                        <h3 className="mb-2">Client : {item.clientName}</h3>
+                        <h3 className="font-semibold mb-2">
+                          <span className="text-red-500">Deadline : {item.deliveryDate}</span>
+                        </h3>
+                      </div>
+                    </Link>
+                  ))}
                 </div>
                 {/* In Review */}
                 <div>
-                  <div className="rounded-lg p-2 bg-green-500 flex justify-between items-center">
+                  <div className="rounded-lg p-2 bg-green-500 flex justify-between items-center mb-4">
                     <h3 className="text-xl">In Review</h3>
                     <div>
                       <div className="opacity-50">
@@ -95,10 +107,22 @@ const WorkspaceProduction = () => {
                       </div>
                     </div>
                   </div>
+
+                  {reviewProjects && reviewProjects.map((item, index) => (
+                    <Link key={index} to={`/ProductionProjectDetail/${item.id}`}>
+                      <div className="border rounded-lg p-3 shadow-lg mb-4 text-black bg-slate-200">
+                        <h3 className="text-xl mb-2">{item.title}</h3>
+                        <h3 className="mb-2">Client : {item.clientName}</h3>
+                        <h3 className="font-semibold mb-2">
+                          <span className="text-red-500">Deadline : {item.deliveryDate}</span>
+                        </h3>
+                      </div>
+                    </Link>
+                  ))}
                 </div>
                 {/* Completed */}
                 <div>
-                  <div className="rounded-lg p-2 bg-yellow-500 flex justify-between items-center">
+                  <div className="rounded-lg p-2 bg-yellow-500 flex justify-between items-center mb-4">
                     <h3 className="text-xl">Completed</h3>
                     <div>
                       <div className="opacity-50">
@@ -106,6 +130,18 @@ const WorkspaceProduction = () => {
                       </div>
                     </div>
                   </div>
+
+                  {completedProjects && completedProjects.map((item, index) => (
+                    <Link key={index} to={`/ProductionProjectDetail/${item.id}`}>
+                      <div className="border rounded-lg p-3 shadow-lg mb-4 text-black bg-slate-200">
+                        <h3 className="text-xl mb-2">{item.title}</h3>
+                        <h3 className="mb-2">Client : {item.clientName}</h3>
+                        <h3 className="font-semibold mb-2">
+                          <span className="text-red-500">Deadline : {item.deliveryDate}</span>
+                        </h3>
+                      </div>
+                    </Link>
+                  ))}
                 </div>
               </div>
             </div>

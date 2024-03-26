@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import axios from "axios";
+import api from "./Api";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -10,7 +11,7 @@ const Login = () => {
   const handleLogin = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:4000/api/user/login",
+        `${api}/api/user/login`,
         {
           username: username,
           password: password,
@@ -32,8 +33,10 @@ const Login = () => {
     } catch (error) {
       console.log("Error logging in:", error);
       setAuthError("Error logging in");
+      alert(error.message); 
     }
   };
+
 
   useEffect(() => {
     const token = localStorage.getItem("token");

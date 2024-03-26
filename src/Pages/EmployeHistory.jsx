@@ -5,6 +5,7 @@ import Footer from "../Components/Footer";
 import { useLocation, useParams } from "react-router-dom";
 import axios from "axios";
 import WithAuth from "../Components/WithAuth";
+import api from "../Components/Api";
 
 
 const EmployeHistory = () => {
@@ -16,32 +17,25 @@ const EmployeHistory = () => {
   const table_head = [
     "Department",
     "Designation",
-    "Start Date",
-    "End Date",
     "Salary",
     "Shift",
+    "Bank",
+    "Account"
   ];
 
-  const emptyFromData = {
-    id: "",
-    Name: "", // Changed from "Name" to "name"
-    depart: "",
-    desg: "",
-    startDate: "",
-    endDate: "",
-    salary: "",
-    shift: "",
-  }
-
+  const [shift, setShift] = useState([]);
+  const [designation, setDesignation] = useState([]);
+  const [department, setDepartment] = useState([]);
+  const [bank, setBank] = useState([]);
   const [formData, setFormData] = useState({
     id: "",
-    Name: "", // Change from "name" to "Name"
+    Name: "",
     depart: "",
     desg: "",
-    startDate: "",
-    endDate: "",
     salary: "",
     shift: "",
+    bankName: "",
+    accountNum: ""
   });
 
   const handleInputChange = (e) => {
@@ -54,37 +48,112 @@ const EmployeHistory = () => {
     const fetchEmployeeData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:4000/api/employee/search/${id}`
+          `${api}/api/employee/search/${id}`
         );
-        alert("Data fetched successfully!")
         setEmployeeData(response.data.data[0]);
-        console.log(response.data.data[0]);
+        console.log(`fetching employee history of id : ${id}`, response.data.data[0]);
+        setFormData(prevState => ({
+          ...prevState,
+          // Name: response.data.data[0].name,
+          // joinDate: response.data.data[0].joiningDate,
+          // FathName: response.data.data[0].fathersName,
+          // phone: response.data.data[0].phone,
+          // cnic: response.data.data[0].cnic,
+          // email: response.data.data[0].email,
+          // emergencyPhone: response.data.data[0].emergencyPhone,
+          // reference: response.data.data[0].reference,
+          // address: response.data.data[0].address,
+          // userName: response.data.data[0].username,
+          // password: response.data.data[0].password,
+          depart: response.data.data[0].history[response.data.data[0].history.length - 1].department,
+          desg: response.data.data[0].history[response.data.data[0].history.length - 1].designation,
+          salary: response.data.data[0].history[response.data.data[0].history.length - 1].salary,
+          shift: response.data.data[0].history[response.data.data[0].history.length - 1].shift,
+          bankName: response.data.data[0].history[response.data.data[0].history.length - 1].bank,
+          accountNum: response.data.data[0].history[response.data.data[0].history.length - 1].accountNumber,
+        }));
       } catch (error) {
         console.log("Error fetching employee data :", error);
       }
     };
 
+    const shiftFetch = async () => {
+      try {
+        const response = await axios.get(`${api}/dropdown/getShift`);
+        if (response.status === 200 && response.data.success) {
+          setShift(response.data.data[0])
+        }
+      } catch (error) {
+        console.log("Error in shift fetching", error)
+      }
+    }
+
+    const designationFetch = async () => {
+      try {
+        const response = await axios.get(`${api}/dropdown/getDesignation`);
+        if (response.status === 200 && response.data.success) {
+          setDesignation(response.data.data[0])
+        }
+      } catch (error) {
+        console.log("Error in designation fetching", error)
+      }
+    }
+
+    const getDepartment = async () => {
+      try {
+        const response = await axios.get(`${api}/dropdown/getDepartment`);
+        setDepartment(response.data.data[0]);
+        console.log("Response", response.data.data[0]);
+      } catch (error) {
+        console.log("Error in fetching Project Nature", error)
+      }
+    };
+
+    const bankFetch = async () => {
+      try {
+        const response = await axios.get(`${api}/dropdown/getBank`);
+        setBank(response.data.data[0]);
+        console.log("Response", response.data.data[0]);
+      } catch (error) {
+        console.log("Error in fetching Bank", error)
+      }
+    };
+
     fetchEmployeeData();
+    shiftFetch();
+    designationFetch();
+    getDepartment();
+    bankFetch();
   }, []);
 
 
   const handleRecord = async () => {
+    console.log(formData)
     try {
-      const response = await axios.post(`http://localhost:4000/api/employee/addRecord/${id}`, {
+      const response = await axios.post(`${api}/api/employee/addRecord/${id}`, {
         department: formData.depart,
         designation: formData.desg,
-        StartDate: formData.startDate,
-        EndDate: formData.endDate,
         salary: formData.salary,
-        shift: formData.shift
+        shift: formData.shift,
+        bank: formData.bankName,
+        accountNumber: formData.accountNum
       });
       if (response.status === 200 && response.data.success) {
         console.log("Employee History posted successfully!")
         console.log(response)
         alert("Employee History posted successfully!")
+        setFormData({
+          depart: "",
+          desg: "",
+          salary: "",
+          shift: "",
+          bankName: "",
+          accountNum: ""
+        });
       }
     } catch (error) {
       console.log("Error", error);
+      alert("Error in adding record : ", error.message)
     }
   }
 
@@ -131,16 +200,16 @@ const EmployeHistory = () => {
                             {item.designation}
                           </td>
                           <td className="p-2 text-start border-b border-gray-300">
-                            {item.StartDate}
-                          </td>
-                          <td className="p-2 text-start border-b border-gray-300">
-                            {item.EndDate}
-                          </td>
-                          <td className="p-2 text-start border-b border-gray-300">
                             {item.salary}
                           </td>
                           <td className="p-2 text-start border-b border-gray-300">
                             {item.shift}
+                          </td>
+                          <td className="p-2 text-start border-b border-gray-300">
+                            {item.bank}
+                          </td>
+                          <td className="p-2 text-start border-b border-gray-300">
+                            {item.accountNumber}
                           </td>
                         </tr>
                       ))}
@@ -152,108 +221,44 @@ const EmployeHistory = () => {
                 {/* form start */}
                 <div className="shadow-lg rounded-lg p-4 my-10 bg-gray-200">
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 text-center lg:text-start">
-                    {/* <div className="mb-3">
-                      <label
-                        htmlFor="id"
-                        className="block text-sm font-medium leading-6 text-gray-900"
-                      >
-                        Id:
-                      </label>
-                      <input
-                        type="number"
-                        className={`block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 focus:outline-none ring-gray-300 ring-1 ring-inset placeholder:text-gray-400 sm:text-sm sm:leading-6`}
-                        id="id"
-                        name="id"
-                        value={formData.id}
-                        onChange={handleInputChange}
-                      />
-                    </div>
-                    <div className="mb-3">
-                      <label
-                        htmlFor="Name"
-                        className="block text-sm font-medium leading-6 text-gray-900"
-                      >
-                        Name:
-                      </label>
-                      <input
-                        type="text"
-                        className={`block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 focus:outline-none ring-gray-300 ring-1 ring-inset placeholder:text-gray-400 sm:text-sm sm:leading-6`}
-                        id="Name"
-                        name="Name"
-                        value={formData.Name}
-                        onChange={handleInputChange}
-                      />
-                    </div> */}
                     <div className="mb-3">
                       <label
                         htmlFor="depart"
                         className="block text-sm font-medium leading-6 text-gray-900"
                       >
-                        Department:
+                        Department: <span className='text-red-500'>*</span>
                       </label>
-                      <input
-                        type="text"
-                        className={`block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 focus:outline-none ring-gray-300 ring-1 ring-inset placeholder:text-gray-400 sm:text-sm sm:leading-6`}
-                        id="depart"
-                        name="depart"
-                        value={formData.depart}
-                        onChange={handleInputChange}
-                      />
+                      <select id="depart" className='w-full border p-2 rounded' name='depart' value={formData.depart} onChange={handleInputChange}>
+                        <option className='m-5' value="">Select</option>
+                        {
+                          department.map((item, index) => (
+                            <option key={index} className='m-5' value={item.label}>{item.label}</option>
+                          ))
+                        }
+                      </select>
                     </div>
                     <div className="mb-3">
                       <label
                         htmlFor="desg"
                         className="block text-sm font-medium leading-6 text-gray-900"
                       >
-                        Designation:
+                        Designation: <span className='text-red-500'>*</span>
                       </label>
-                      <input
-                        type="text"
-                        className={`block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 focus:outline-none ring-gray-300 ring-1 ring-inset placeholder:text-gray-400 sm:text-sm sm:leading-6`}
-                        id="desg"
-                        name="desg"
-                        value={formData.desg}
-                        onChange={handleInputChange}
-                      />
-                    </div>
-                    <div className="mb-3">
-                      <label
-                        htmlFor="startDate"
-                        className="block text-sm font-medium leading-6 text-gray-900"
-                      >
-                        Start Date:
-                      </label>
-                      <input
-                        type="text"
-                        className={`block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 focus:outline-none ring-gray-300 ring-1 ring-inset placeholder:text-gray-400 sm:text-sm sm:leading-6`}
-                        id="startDate"
-                        name="startDate"
-                        value={formData.startDate}
-                        onChange={handleInputChange}
-                      />
-                    </div>
-                    <div className="mb-3">
-                      <label
-                        htmlFor="endDate"
-                        className="block text-sm font-medium leading-6 text-gray-900"
-                      >
-                        End Date:
-                      </label>
-                      <input
-                        type="text"
-                        className={`block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 focus:outline-none ring-gray-300 ring-1 ring-inset placeholder:text-gray-400 sm:text-sm sm:leading-6`}
-                        id="endDate"
-                        name="endDate"
-                        value={formData.endDate}
-                        onChange={handleInputChange}
-                      />
+                      <select id="desg" className='w-full border p-2 rounded' name='desg' value={formData.desg} onChange={handleInputChange}>
+                        <option className='m-5' value="">Select</option>
+                        {
+                          designation.map((item, index) => (
+                            <option key={index} className='m-5' value={item.label}>{item.label}</option>
+                          ))
+                        }
+                      </select>
                     </div>
                     <div className="mb-3">
                       <label
                         htmlFor="salary"
                         className="block text-sm font-medium leading-6 text-gray-900"
                       >
-                        Salary:
+                        Salary: <span className='text-red-500'>*</span>
                       </label>
                       <input
                         type="number"
@@ -269,14 +274,46 @@ const EmployeHistory = () => {
                         htmlFor="shift"
                         className="block text-sm font-medium leading-6 text-gray-900"
                       >
-                        Shift:
+                        Shift: <span className='text-red-500'>*</span>
+                      </label>
+                      <select id="shift" className='w-full border p-2 rounded' name='shift' value={formData.shift} onChange={handleInputChange}>
+                        <option className='m-5' value="">Select</option>
+                        {
+                          shift.map((item, index) => (
+                            <option key={index} className='m-5' value={item.label}>{item.label}</option>
+                          ))
+                        }
+                      </select>
+                    </div>
+                    <div className="mb-3">
+                      <label
+                        htmlFor="bankName"
+                        className="block text-sm font-medium leading-6 text-gray-900"
+                      >
+                        Bank: <span className='text-red-500'>*</span>
+                      </label>
+                      <select id="bankName" className='w-full border p-2 rounded' name='bankName' value={formData.bankName} onChange={handleInputChange}>
+                        <option className='m-5' value="">Select</option>
+                        {
+                          bank.map((item, index) => (
+                            <option key={index} className='m-5' value={item.label}>{item.label}</option>
+                          ))
+                        }
+                      </select>
+                    </div>
+                    <div className="mb-3">
+                      <label
+                        htmlFor="accountNum"
+                        className="block text-sm font-medium leading-6 text-gray-900"
+                      >
+                        Account: <span className='text-red-500'>*</span>
                       </label>
                       <input
                         type="text"
                         className={`block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 focus:outline-none ring-gray-300 ring-1 ring-inset placeholder:text-gray-400 sm:text-sm sm:leading-6`}
-                        id="shift"
-                        name="shift"
-                        value={formData.shift}
+                        id="accountNum"
+                        name="accountNum"
+                        value={formData.accountNum}
                         onChange={handleInputChange}
                       />
                     </div>

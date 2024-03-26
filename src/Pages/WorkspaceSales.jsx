@@ -9,22 +9,35 @@ import { MdIncompleteCircle } from "react-icons/md";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import SalesAuth from "../Components/SalesAuth";
+import api from "../Components/Api";
 
 const WorkspaceSales = () => {
   const [projects, setProjects] = useState([]);
+  const [allotedProjects, setAllotedProjects] = useState([]);
+  const [reviewProjects, setReviewProjects] = useState([]);
+  const [completedProjects, setCompletedProjects] = useState([]);
+  const [progressProjects, setProgressProjects] = useState([]);
 
+  const fetchingProjects = async () => {
+    try {
+      const response = await axios.get(
+        `${api}/api/projects/get`
+      );
+      
+      const data = response.data.data[0];
+      const allotedResponse = data.filter(item => item.status === "To be Alloted");
+      const progressResponse = data.filter(item => item.status === "In Progress");
+      const reviewResponse = data.filter(item => item.status === "In Review");
+      const completedResponse = data.filter(item => item.status === "Completed");
+      setAllotedProjects(allotedResponse);
+      setProgressProjects(progressResponse);
+      setReviewProjects(reviewResponse);
+      setCompletedProjects(completedResponse);
+    } catch (error) {
+      console.log("Error in fetching projects ", error);
+    }
+  };
   useEffect(() => {
-    const fetchingProjects = async () => {
-      try {
-        const response = await axios.get(
-          "http://localhost:4000/api/projects/get"
-        );
-        setProjects(response.data.data[0]);
-        console.log(response.data.data[0]);
-      } catch (error) {
-        console.log("Error in fetching projects ", error);
-      }
-    };
 
     fetchingProjects();
   }, []);
@@ -50,19 +63,17 @@ const WorkspaceSales = () => {
                       </div>
                     </div>
                   </div>
-                  {projects &&
-                    projects.map((item, index) => (
-                      <Link key={index} to={"/SalesProjectDetail"}>
-                        <div className="border rounded-lg p-3 shadow-lg mb-4 text-black bg-slate-200">
-                          <h3 className="text-xl mb-2">{item.title}</h3>
-                          <h3 className="mb-2">Client : {item.clientName}</h3>
-                          <h3 className="font-semibold mb-2">
-                            <span className="text-red-500">Deadline : </span>{" "}
-                            {item.deleiveryDate}
-                          </h3>
-                        </div>
-                      </Link>
-                    ))}
+                  {allotedProjects && allotedProjects.map((item, index) => (
+                    <Link key={index} to={`/SalesProjectDetail/${item.id}`}>
+                      <div className="border rounded-lg p-3 shadow-lg mb-4 text-black bg-slate-200">
+                        <h3 className="text-xl mb-2">{item.title}</h3>
+                        <h3 className="mb-2">Client : {item.clientName}</h3>
+                        <h3 className="font-semibold mb-2">
+                          <span className="text-red-500">Deadline : {item.deliveryDate}</span>
+                        </h3>
+                      </div>
+                    </Link>
+                  ))}
                 </div>
                 {/* In progress */}
                 <div>
@@ -74,19 +85,21 @@ const WorkspaceSales = () => {
                       </div>
                     </div>
                   </div>
-                  {/* <Link to={'/SalesProjectDetail'}>
-                                        <div className="border rounded-lg p-3 shadow-lg mb-4 text-black bg-slate-200">
-                                            <h3 className="text-xl mb-2">Project Title</h3>
-                                            <h3 className="text-xl mb-2">Client Name</h3>
-                                            <h3 className="text-xl mb-2">
-                                                Deadline
-                                            </h3>
-                                        </div>
-                                    </Link> */}
+                  {progressProjects && progressProjects.map((item, index) => (
+                    <Link key={index} to={`/SalesProjectDetail/${item.id}`}>
+                      <div className="border rounded-lg p-3 shadow-lg mb-4 text-black bg-slate-200">
+                        <h3 className="text-xl mb-2">{item.title}</h3>
+                        <h3 className="mb-2">Client : {item.clientName}</h3>
+                        <h3 className="font-semibold mb-2">
+                          <span className="text-red-500">Deadline : {item.deliveryDate}</span>
+                        </h3>
+                      </div>
+                    </Link>
+                  ))}
                 </div>
                 {/* In Review */}
                 <div>
-                  <div className="rounded-lg p-2 bg-green-500 flex justify-between items-center">
+                  <div className="rounded-lg p-2 bg-green-500 flex justify-between items-center mb-4">
                     <h3 className="text-xl">In Review</h3>
                     <div>
                       <div className="opacity-50">
@@ -94,10 +107,22 @@ const WorkspaceSales = () => {
                       </div>
                     </div>
                   </div>
+
+                  {reviewProjects && reviewProjects.map((item, index) => (
+                    <Link key={index} to={`/SalesProjectDetail/${item.id}`}>
+                      <div className="border rounded-lg p-3 shadow-lg mb-4 text-black bg-slate-200">
+                        <h3 className="text-xl mb-2">{item.title}</h3>
+                        <h3 className="mb-2">Client : {item.clientName}</h3>
+                        <h3 className="font-semibold mb-2">
+                          <span className="text-red-500">Deadline : {item.deliveryDate}</span>
+                        </h3>
+                      </div>
+                    </Link>
+                  ))}
                 </div>
                 {/* Completed */}
                 <div>
-                  <div className="rounded-lg p-2 bg-yellow-500 flex justify-between items-center">
+                  <div className="rounded-lg p-2 bg-yellow-500 flex justify-between items-center mb-4">
                     <h3 className="text-xl">Completed</h3>
                     <div>
                       <div className="opacity-50">
@@ -105,6 +130,18 @@ const WorkspaceSales = () => {
                       </div>
                     </div>
                   </div>
+
+                  {completedProjects && completedProjects.map((item, index) => (
+                    <Link key={index} to={`/SalesProjectDetail/${item.id}`}>
+                      <div className="border rounded-lg p-3 shadow-lg mb-4 text-black bg-slate-200">
+                        <h3 className="text-xl mb-2">{item.title}</h3>
+                        <h3 className="mb-2">Client : {item.clientName}</h3>
+                        <h3 className="font-semibold mb-2">
+                          <span className="text-red-500">Deadline : {item.deliveryDate}</span>
+                        </h3>
+                      </div>
+                    </Link>
+                  ))}
                 </div>
               </div>
             </div>

@@ -12,130 +12,113 @@ import { PieChart } from "@mui/x-charts/PieChart";
 import axios from "axios";
 import { useDrop, useDrag } from "react-dnd";
 import WithAuth from "../Components/WithAuth";
+import api from "../Components/Api";
 
 const Workspace = () => {
-  const cardInfo = [
-    {
-      heading: "To be alloted",
-      path: "/Workspace/Alloted",
-      image: <GoProjectRoadmap size={28} />,
-    },
-    {
-      heading: "In Progress",
-      path: "/Workspace/Progress",
-      image: <GiProgression size={28} />,
-    },
-    {
-      heading: "In Review",
-      path: "/Workspace/Interview",
-      image: <PiExamFill size={28} />,
-    },
-    {
-      heading: "Completed",
-      path: "/Workspace/Completed",
-      image: <MdIncompleteCircle size={28} />,
-    },
-  ];
 
-  const [inProgressItems, setInProgressItems] = useState([]);
-  const [toBeAllotedItems, setToBeAllotedItems] = useState([]);
-  const [InReviewItems, setInReviewItems] = useState([]);
-  const [completedItems, setCompletedItems] = useState([]);
-  const [update, setUpdate] = useState(false);
+  const [projects, setProjects] = useState([]);
+  const [allotedProjects, setAllotedProjects] = useState([]);
+  const [reviewProjects, setReviewProjects] = useState([]);
+  const [completedProjects, setCompletedProjects] = useState([]);
+  const [progressProjects, setProgressProjects] = useState([]);
 
-  const handleOnDrag = (e, section, projectData) => {
-    e.dataTransfer.setData("section", section);
-    e.dataTransfer.setData("projectData", JSON.stringify(projectData));
-  };
+  // const fetchingProjects = async () => {
+  //   try {
+  //     const response = await axios.get(
+  //       `${api}/api/projects/get`
+  //     );
+  //     setProjects(response.data.data[0]);
+  //     console.log(response.data.data[0]);
+  //   } catch (error) {
+  //     console.log("Error in fetching projects ", error);
+  //   }
+  // };
 
-  const handleOnDrop = (e, targetSection) => {
-    console.log(completedItems);
-    const sourceSection = e.dataTransfer.getData("section");
-    const projectData = JSON.parse(e.dataTransfer.getData("projectData"));
+  const fetchingAllotedProjects = async () => {
+    try {
+      const response = await axios.get(
+        `${api}/api/alloted/get`
+      );
+      if (response.status === 200 && response.data.success) {
+        setAllotedProjects(response.data.data[0]);
+        console.log(response.data.data[0]);
+      }
+    } catch (error) {
+      console.log("Error in fetching Alloted Projects ", error);
+    }
+  }
 
-    const updatedSourceSection = geUpdatedSourceSection(
-      sourceSection,
-      projectData
-    );
+  const fetchingReviewProjects = async () => {
+    try {
+      const response = await axios.get(
+        `${api}/api/review/get`
+      );
+      if (response.status === 200 && response.data.success) {
+        setReviewProjects(response.data.data[0]);
+        console.log(response.data.data[0]);
+      }
+    } catch (error) {
+      console.log("Error in fetching Review Projects ", error);
+    }
+  }
 
-    const updatedTargetSection = getUpdatedTargetSection(
-      targetSection,
-      projectData
-    );
+  const fetchingCompletedProjects = async () => {
+    try {
+      const response = await axios.get(
+        `${api}/api/completed/get`
+      );
+      if (response.status === 200 && response.data.success) {
+        setCompletedProjects(response.data.data[0]);
+        console.log(response.data.data[0]);
+      }
+    } catch (error) {
+      console.log("Error in fetching Completed Projects ", error);
+    }
+  }
 
-    updateSectionState(sourceSection, updatedSourceSection);
-    updateSectionState(targetSection, updatedTargetSection);
-  };
+  const fetchingProgressProjects = async () => {
+    try {
+      const response = await axios.get(
+        `${api}/api/progress/get`
+      );
+      if (response.status === 200 && response.data.success) {
+        setProgressProjects(response.data.data[0]);
+        console.log(response.data.data[0]);
+      }
+    } catch (error) {
+      console.log("Error in fetching progress Projects ", error);
+    }
+  }
 
-  const handleDragOver = (e) => {
-    e.preventDefault();
-  };
+  // useEffect(() => {
 
-  const geUpdatedSourceSection = (section, projectData) => {
-    return sectionDataMap[section].filter(
-      (item) => item.title !== projectData.title
-    );
-  };
+  //   // fetchingProjects();
+  //   fetchingAllotedProjects();
+  //   fetchingReviewProjects();
+  //   fetchingCompletedProjects();
+  //   fetchingProgressProjects();
+  // }, []);
 
-  const getUpdatedTargetSection = (section, projectData) => {
-    // console.log(section)
-    // console.log(projectData)
-    return [...sectionDataMap[section], projectData];
-  };
-
-  useEffect(() => {
-    console.log("completedItems updated:", completedItems);
-  }, [completedItems]);
-
-  const updateSectionState = (section, updatedSectionData) => {
-    switch (section) {
-      case "toBeAlloted":
-        setToBeAllotedItems((prevItems) => updatedSectionData);
-        break;
-
-      case "inProgress":
-        setInProgressItems((prevItems) => updatedSectionData);
-        break;
-
-      case "inReview":
-        setInReviewItems((prevItems) => updatedSectionData);
-        break;
-
-      case "completed":
-        console.log("completed working");
-        console.log("UdatedSectionData", updatedSectionData);
-        setCompletedItems((prevItems) => {
-          console.log("completedItems", prevItems);
-          return updatedSectionData;
-        });
-        break;
-
-      default:
-        break;
+  const fetchingProjects = async () => {
+    try {
+      const response = await axios.get(
+        `${api}/api/projects/get`
+      );
+      const project = response.data.data[0];
+      const allotedProjects = project.filter(item => item.status === "To be Alloted");
+      const progressProjects = project.filter(item => item.status === "In Progress");
+      const reviewProjects = project.filter(item => item.status === "In Review");
+      const completedProjects = project.filter(item => item.status === "Completed");
+      setAllotedProjects(allotedProjects);
+      setProgressProjects(progressProjects);
+      setReviewProjects(reviewProjects);
+      setCompletedProjects(completedProjects);
+    } catch (error) {
+      console.log("Error in fetching projects ", error);
     }
   };
 
-  const sectionDataMap = {
-    toBeAlloted: toBeAllotedItems,
-    inProgress: inProgressItems,
-    inReview: InReviewItems,
-    completed: completedItems,
-  };
-
-  const [projects, setProjects] = useState([]);
-
   useEffect(() => {
-    const fetchingProjects = async () => {
-      try {
-        const response = await axios.get(
-          "http://localhost:4000/api/projects/get"
-        );
-        setProjects(response.data.data[0]);
-        console.log(response.data.data[0]);
-      } catch (error) {
-        console.log("Error in fetching projects ", error);
-      }
-    };
 
     fetchingProjects();
   }, []);
@@ -149,156 +132,98 @@ const Workspace = () => {
         <div className="container flex flex-col justify-between">
           <div>
             <Navbar />
-            <div className="pt-10">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 px-5 text-white">
-                {cardInfo.map((item, index) => (
-                  <div key={index}>
-                    {item.heading === "To be alloted" && (
-                      <div>
-                        {/* <Link to={item.path}>
-        </Link> */}
-                        <div className="rounded-lg p-2 bg-red-500 flex justify-between items-center">
-                          <h3 className="text-xl">{item.heading}</h3>
-                          <div>
-                            <div className="opacity-50">{item.image}</div>
-                          </div>
-                        </div>
-
-                        <div className="py-5">
-                          {projects.map((item2, index2) => (
-                            <Link to={`/ProjectDetails/:${item2.id}`}>
-                              <div
-                                key={index2}
-                                className="border rounded-lg p-3 shadow-lg mb-4 text-black bg-slate-200"
-                                draggable
-                                onDragStart={(e) =>
-                                  handleOnDrag(e, "toBeAlloted", item2)
-                                }
-                              >
-                                <h3 className="text-xl font-bold mb-2">
-                                  {item2.title}
-                                </h3>
-                                <h3 className="mb-2">
-                                  Client: {item2.clientName}
-                                </h3>
-                                <h3 className="mb-2">
-                                  <span className="font-semibold text-red-500">
-                                    Deadline:
-                                  </span>{" "}
-                                  {item2.deleiveryDate}
-                                </h3>
-                              </div>
-                            </Link>
-                          ))}
-                        </div>
+            <div className="pt-10 px-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 text-white">
+                {/* to be alloted */}
+                <div>
+                  <div className="rounded-lg p-2 bg-red-500 flex justify-between items-center mb-4">
+                    <h3 className="text-xl">To be Alloted</h3>
+                    <div>
+                      <div className="opacity-50">
+                        <GoProjectRoadmap size={28} />
                       </div>
-                    )}
-                    {item.heading === "In Progress" && (
-                      <div>
-                        {/* <Link to={item.path}>
-        </Link> */}
-                        <div
-                          className="rounded-lg p-2 bg-orange-500 flex justify-between items-center"
-                          onDrop={(e) => handleOnDrop(e, "inProgress")}
-                          onDragOver={handleDragOver}
-                        >
-                          <h3 className="text-xl">{item.heading}</h3>
-                          <div>
-                            <div className="opacity-50">{item.image}</div>
-                          </div>
-                        </div>
-                        <div className="py-5">
-                          {inProgressItems.map((item2, index2) => (
-                            <Link to={`/ProjectDetails/:${item2.userID}`}>
-                              <div
-                                key={index2}
-                                className="border rounded-lg p-3 shadow-lg mb-4 text-black bg-slate-200"
-                                draggable
-                                onDragStart={(e) =>
-                                  handleOnDrag(e, "inProgress", item2)
-                                }
-                              >
-                                <h3 className="text-xl mb-2">{item2.title}</h3>
-                                <h3 className="text-xl mb-2">{item2.Name}</h3>
-                                <h3 className="text-xl mb-2">
-                                  {item2.deadline}
-                                </h3>
-                              </div>
-                            </Link>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    {item.heading === "Completed" && (
-                      <div>
-                        {/* <Link to={item.path}>
-        </Link> */}
-                        <div
-                          className="rounded-lg p-2 bg-green-500 flex justify-between items-center"
-                          onDrop={(e) => handleOnDrop(e, "completed")}
-                          onDragOver={handleDragOver}
-                        >
-                          <h3 className="text-xl">{item.heading}</h3>
-                          <div>
-                            <div className="opacity-50">{item.image}</div>
-                          </div>
-                        </div>
-                        <div className="py-5">
-                          {completedItems.map((item2, index2) => (
-                            <Link to={`/ProjectDetails/:${item2.userID}`}>
-                              <div
-                                key={index2}
-                                className="border rounded-lg p-3 shadow-lg mb-4 text-black bg-slate-200"
-                              >
-                                <h3 className="text-xl mb-2">{item2.title}</h3>
-                                <h3 className="text-xl mb-2">{item2.Name}</h3>
-                                <h3 className="text-xl mb-2">
-                                  {item2.deadline}
-                                </h3>
-                              </div>
-                            </Link>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    {item.heading === "In Review" && (
-                      <div>
-                        {/* <Link to={item.path}>
-        </Link> */}
-                        <div
-                          className="rounded-lg p-2 bg-yellow-500 flex justify-between items-center"
-                          onDrop={(e) => handleOnDrop(e, "inReview")}
-                          onDragOver={handleDragOver}
-                        >
-                          <h3 className="text-xl">{item.heading}</h3>
-                          <div>
-                            <div className="opacity-50">{item.image}</div>
-                          </div>
-                        </div>
-                        <div className="py-5">
-                          {InReviewItems.map((item2, index2) => (
-                            <Link to={`/ProjectDetails/:${item2.userID}`}>
-                              <div
-                                key={index2}
-                                className="border rounded-lg p-3 shadow-lg mb-4 text-black bg-slate-200"
-                                draggable
-                                onDragStart={(e) =>
-                                  handleOnDrag(e, "inReview", item2)
-                                }
-                              >
-                                <h3 className="text-xl mb-2">{item2.title}</h3>
-                                <h3 className="text-xl mb-2">{item2.Name}</h3>
-                                <h3 className="text-xl mb-2">
-                                  {item2.deadline}
-                                </h3>
-                              </div>
-                            </Link>
-                          ))}
-                        </div>
-                      </div>
-                    )}
+                    </div>
                   </div>
-                ))}
+                  {allotedProjects && allotedProjects.map((item, index) => (
+                    <Link key={index} to={`/ProjectDetails/${item.id}`}>
+                      <div className="border rounded-lg p-3 shadow-lg mb-4 text-black bg-slate-200">
+                        <h3 className="text-xl mb-2">{item.title}</h3>
+                        <h3 className="mb-2">Client : {item.clientName}</h3>
+                        <h3 className="font-semibold mb-2">
+                          <span className="text-red-500">Deadline : {item.deliveryDate}</span>
+                        </h3>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+                {/* In progress */}
+                <div>
+                  <div className="rounded-lg p-2 bg-orange-500 flex justify-between items-center mb-4">
+                    <h3 className="text-xl">In Progress</h3>
+                    <div>
+                      <div className="opacity-50">
+                        <GiProgression size={28} />
+                      </div>
+                    </div>
+                  </div>
+                  {progressProjects && progressProjects.map((item, index) => (
+                    <Link key={index} to={`/ProjectDetails/${item.id}`}>
+                      <div className="border rounded-lg p-3 shadow-lg mb-4 text-black bg-slate-200">
+                        <h3 className="text-xl mb-2">{item.title}</h3>
+                        <h3 className="mb-2">Client : {item.clientName}</h3>
+                        <h3 className="font-semibold mb-2">
+                          <span className="text-red-500">Deadline : {item.deliveryDate}</span>
+                        </h3>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+                {/* In Review */}
+                <div>
+                  <div className="rounded-lg p-2 bg-green-500 flex justify-between items-center mb-4">
+                    <h3 className="text-xl">In Review</h3>
+                    <div>
+                      <div className="opacity-50">
+                        <PiExamFill size={28} />
+                      </div>
+                    </div>
+                  </div>
+
+                  {reviewProjects && reviewProjects.map((item, index) => (
+                    <Link key={index} to={`/ProjectDetails/${item.id}`}>
+                      <div className="border rounded-lg p-3 shadow-lg mb-4 text-black bg-slate-200">
+                        <h3 className="text-xl mb-2">{item.title}</h3>
+                        <h3 className="mb-2">Client : {item.clientName}</h3>
+                        <h3 className="font-semibold mb-2">
+                          <span className="text-red-500">Deadline : {item.deliveryDate}</span>
+                        </h3>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+                {/* Completed */}
+                <div>
+                  <div className="rounded-lg p-2 bg-yellow-500 flex justify-between items-center mb-4">
+                    <h3 className="text-xl">Completed</h3>
+                    <div>
+                      <div className="opacity-50">
+                        <MdIncompleteCircle size={28} />
+                      </div>
+                    </div>
+                  </div>
+
+                  {completedProjects && completedProjects.map((item, index) => (
+                    <Link key={index} to={`/ProjectDetails/${item.id}`}>
+                      <div className="border rounded-lg p-3 shadow-lg mb-4 text-black bg-slate-200">
+                        <h3 className="text-xl mb-2">{item.title}</h3>
+                        <h3 className="mb-2">Client : {item.clientName}</h3>
+                        <h3 className="font-semibold mb-2">
+                          <span className="text-red-500">Deadline : {item.deliveryDate}</span>
+                        </h3>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
               </div>
             </div>
           </div>

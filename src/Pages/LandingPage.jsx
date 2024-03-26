@@ -1,26 +1,68 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Footer from '../Components/Footer';
 import { LogIn } from 'lucide-react';
+import axios from 'axios';
+import api from '../Components/Api';
 
 const LandingPage = () => {
+
+    const [employeeData, setEmployeeData] = useState([]);
+    const [salesUser, setSalesUser] = useState([]);
+    const [adminUser, setAdminUser] = useState([]);
+    const [productionUser, setProductionUser] = useState([]);
+
+    const fetchEmployeeData = async () => {
+        const response = await axios.get(`${api}/api/employee/fetch`);
+        const data = response.data.data[0];
+
+        const sales = [];
+        const admin = [];
+        const production = [];
+
+        data.forEach(item => {
+            const department = item.history[item.history.length - 1].department;
+            if (department === "Administration") {
+                admin.push(item);
+            } else if (department === "Sales") {
+                sales.push(item);
+            } else if (department === "Production-Graphics" || department === "Production-Development") {
+                production.push(item);
+            }
+        });
+
+        setEmployeeData(data);
+        setAdminUser(admin);
+        setSalesUser(sales);
+        setProductionUser(production);
+    };
+
+    useEffect(() => {
+        fetchEmployeeData();
+    }, []);
+
+    console.log("Employees -> ", employeeData.length);
+
+
+
+
     const landingPage = [
         {
             Name: "Admin Panel",
             Description: "Manage all aspects of your system with ease.",
-            Users: 5,
+            Users: adminUser.length,
             page: "/Login"
         },
         {
             Name: "Sales Person",
             Description: "Boost sales and track your team's performance.",
-            Users: 8,
+            Users: salesUser.length,
             page: "/SalesLogin"
         },
         {
             Name: "Production",
             Description: "Efficiently handle production processes and workflows.",
-            Users: 10,
+            Users: productionUser.length,
             page: "/ProductionLogin"
         },
     ];

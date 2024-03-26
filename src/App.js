@@ -20,35 +20,46 @@ import WorkspaceSales from "./Pages/WorkspaceSales";
 import SalesProjectDetail from "./Pages/SalesProjectDetail";
 import WorkspaceProduction from "./Pages/WorkspaceProduction";
 import Attachments from "./Pages/Attachments";
+import ProductionProjectDetail from "./Pages/ProductionProjectDetail";
+import EmployeeEdit from "./Pages/EmployeeEdit";
+import SalesProjectEdit from "./Pages/SalesProjectEdit";
 
 function App() {
-
   return (
     <>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<LandingPage />} /> 
-          <Route path="/Login" element={<Login />} /> 
-          <Route path="/Workspace" element={<Workspace />} /> 
-          <Route path="/Workspace/Alloted" element={<Alloted />} /> 
-          <Route path="/Workspace/Interview" element={<Interview />} /> 
-          <Route path="/Workspace/Completed" element={<Completed />} /> 
-          <Route path="/Workspace/Progress" element={<Progress />} /> 
-          <Route path="/Projects" element={<Projects />} /> 
-          <Route path="/Orders" element={<Orders />} /> 
-          <Route path="/Notifications" element={<Notifications />} /> 
-          <Route path="/ProjectDetails/:id" element={<ProjectDetails />} /> 
-          <Route path="/HR" element={<HR />} /> 
-          <Route path="/Setup" element={<Setup />} /> 
-          <Route path="/HR/EmployeeDetails/:id" element={<EmployeeDetails />} /> 
-          <Route path="/HR/EmployeeDetails" element={<EmployeeDetails />} /> 
-          <Route path="/HR/EmployeeHistory/:id" element={<EmployeHistory />} /> 
-          <Route path="/SalesLogin" element={<LoginSales />} /> 
-          <Route path="/ProductionLogin" element={<LoginProduction />} /> 
-          <Route path="/WorkspaceSales" element={<WorkspaceSales />} /> 
-          <Route path="/SalesProjectDetail" element={<SalesProjectDetail />} /> 
-          <Route path="/WorkspaceProduction" element={<WorkspaceProduction />} /> 
-          <Route path="/Attachments" element={<Attachments />} /> 
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/Login" element={<Login />} />
+          <Route path="/Workspace" element={<Workspace />} />
+          <Route path="/Workspace/Alloted" element={<Alloted />} />
+          <Route path="/Workspace/Interview" element={<Interview />} />
+          <Route path="/Workspace/Completed" element={<Completed />} />
+          <Route path="/Workspace/Progress" element={<Progress />} />
+          <Route path="/Projects" element={<Projects />} />
+          <Route path="/Orders" element={<Orders />} />
+          <Route path="/Notifications" element={<Notifications />} />
+          <Route path="/ProjectDetails/:id" element={<ProjectDetails />} />
+          <Route path="/HR" element={<HR />} />
+          <Route path="/Setup" element={<Setup />} />
+          <Route
+            path="/HR/EmployeeDetails/:id"
+            element={<EmployeeDetails />}
+          />
+          <Route path="/HR/EmployeeDetails" element={<EmployeeDetails />} />
+          <Route path="/HR/EmployeeHistory/:id" element={<EmployeHistory />} />
+          <Route path="/SalesLogin" element={<LoginSales />} />
+          <Route path="/ProductionLogin" element={<LoginProduction />} />
+          <Route path="/WorkspaceSales" element={<WorkspaceSales />} />
+          <Route path="/SalesProjectDetail/:id" element={<SalesProjectDetail />} />
+          <Route
+            path="/WorkspaceProduction"
+            element={<WorkspaceProduction />}
+          />
+          <Route path="/Attachments" element={<Attachments />} />
+          <Route path="/ProductionProjectDetail/:id" element={<ProductionProjectDetail />} />
+          <Route path="/EmployeeEdit/:id" element={<EmployeeEdit />} />
+          <Route path="/SalesProjectEdit/:id" element={<SalesProjectEdit />} />
         </Routes>
       </BrowserRouter>
     </>

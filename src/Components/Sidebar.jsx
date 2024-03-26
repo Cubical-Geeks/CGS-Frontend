@@ -50,7 +50,7 @@ export default function Sidebar({ children }) {
 
 export function SidebarItem({ icon, text, active, alert, onClick, to }) {
   const { expanded } = useContext(SidebarContext);
-  console.log("Active state:", active); // Log the active state
+  // console.log("Active state:", active);
 
   const handleClick = () => {
     onClick();

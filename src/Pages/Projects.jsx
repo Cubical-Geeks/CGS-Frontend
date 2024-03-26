@@ -2,125 +2,128 @@ import React, { useEffect, useState } from 'react'
 import Navbar from '../Components/Navbar'
 import Footer from '../Components/Footer'
 import SalesDashboard from '../Components/SalesDashboard'
-import Select, { components } from "react-select";
 import axios from 'axios';
-import { IoIosSend } from 'react-icons/io';
-
-const Input = (props) => (
-  <components.Input {...props} readOnly={props.selectProps.isReadOnly} />
-);
-
-const MySelect = (props) => {
-  const { options, value, onChange, isReadOnly } = props;
-  const [menuIsOpen, setMenuIsOpen] = useState(false); // State to manage menu open/close
-
-  const handleChange = (selectedOption) => {
-    onChange(selectedOption);
-  };
-
-  return (
-    <Select
-      options={options}
-      value={value}
-      onChange={handleChange}
-      menuIsOpen={!isReadOnly && menuIsOpen} // Open menu if not read-only and state is open
-      onMenuOpen={() => setMenuIsOpen(true)} // Open menu when clicked
-      onMenuClose={() => setMenuIsOpen(false)} // Close menu when clicked outside
-      components={{ Input }}
-    />
-  );
-};
+import api from '../Components/Api';
 
 const Projects = () => {
 
+  const projectStatus = ["To be Alloted", "In Progress", "In Review", "Completed"];
   const [projectNature, setProjectNature] = useState([{ label: "", value: "" }]);
   const [platform, setPlatform] = useState([{ label: "", value: "" }]);
   const [department, setDepartment] = useState([{ label: "", value: "" }]);
-  const [formData, setFormData] = useState({
-    title: "",
-    id: "",
-    startDate: "",
-    deleiveryDate: "",
-    platform: "",
-    department: "",
-    nature: "",
-    profile: "",
-    salesPerson: "",
-    amount: "",
-    clientName: "",
-    description: "",
-    attachments: "",
-  });
-  const handleInputChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-    console.log({ [e.target.name]: e.target.value })
+  const [randomNumber, setRandomNumber] = useState("");
+  const [id, setId] = useState(randomNumber);
+  const [title, setTitle] = useState(null);
+  const [startDate, setStartDate] = useState('');
+  const [deliveryDate, setDeliveryDate] = useState('');
+  const [plat, setPlat] = useState(null);
+  const [depart, setDepart] = useState(null);
+  const [nature, setNature] = useState(null);
+  const [status, setStatus] = useState('');
+  const [profile, setProfile] = useState(null);
+  const [salesPerson, setSalesPerson] = useState(null);
+  const [amount, setAmount] = useState(null);
+  const [clientName, setClientName] = useState(null);
+  const [description, setDescription] = useState(null);
+  const [attachments, setAttachments] = useState(null);
+
+  const generateRandomId = () => {
+    return Math.floor(100000 + Math.random() * 900000);
+  }
+
+  const getProjectNature = async () => {
+    try {
+      const response = await axios.get(`${api}/dropdown/getProjectNature`);
+      setProjectNature(response.data.data[0])
+      console.log("Response", response.data.data[0])
+    } catch (error) {
+      console.log("Error in fetching Project Nature", error)
+    }
+  };
+
+  const getPlatform = async () => {
+    try {
+      const response = await axios.get(`${api}/dropdown/getPlatform`);
+      setPlatform(response.data.data[0])
+      console.log("Response", response.data.data[0])
+    } catch (error) {
+      console.log("Error in fetching Project Nature", error)
+    }
+  };
+
+  const getDepartment = async () => {
+    try {
+      const response = await axios.get(`${api}/dropdown/getDepartment`);
+      setDepartment(response.data.data[0])
+      console.log("Response", response.data.data[0])
+    } catch (error) {
+      console.log("Error in fetching Project Nature", error)
+    }
   };
 
   useEffect(() => {
-    const getProjectNature = async () => {
-      try {
-        const response = await axios.get("http://localhost:4000/dropdown/getProjectNature");
-        setProjectNature(response.data.data[0])
-        console.log("Response", response.data.data[0])
-      } catch (error) {
-        console.log("Error in fetching Project Nature", error)
-      }
-    };
-
-    const getPlatform = async () => {
-      try {
-        const response = await axios.get("http://localhost:4000/dropdown/getPlatform");
-        setPlatform(response.data.data[0])
-        console.log("Response", response.data.data[0])
-      } catch (error) {
-        console.log("Error in fetching Project Nature", error)
-      }
-    };
-
-    const getDepartment = async () => {
-      try {
-        const response = await axios.get("http://localhost:4000/dropdown/getDepartment");
-        setDepartment(response.data.data[0])
-        console.log("Response", response.data.data[0])
-      } catch (error) {
-        console.log("Error in fetching Project Nature", error)
-      }
-    };
-
+    setId(generateRandomId());
     getProjectNature();
     getPlatform();
     getDepartment();
   }, [])
 
+  const isValidDateFormat = (date) => {
+    const dateFormat = /^\d{4}-\d{2}-\d{2}$/;
+    return dateFormat.test(date);
+  };
+
   const handleSubmit = async () => {
+    if (!isValidDateFormat(startDate) || !isValidDateFormat(deliveryDate)) {
+      alert('Please enter dates in the format YYYY-MM-DD');
+      return;
+    }
+
+    // Show loading indicator
+    showLoadingIndicator();
+
     try {
-      const response = await axios.post("http://localhost:4000/api/projects/submit", {
-        id: formData.id,
-        title: formData.title,
-        startDate: formData.startDate,
-        deleiveryDate: formData.deleiveryDate,
-        platform: formData.platform,
-        department: formData.department,
-        nature: formData.nature,
-        profile: formData.profile,
-        salesPerson: formData.salesPerson,
-        amount: formData.amount,
-        clientName: formData.clientName,
-        description: formData.description,
-        attachments: formData.attachments,
-      })
+      const formData = new FormData();
+      formData.append("attachments", attachments);
+      formData.append("id", id);
+      formData.append("title", title);
+      formData.append("startDate", startDate);
+      formData.append("deliveryDate", deliveryDate);
+      formData.append("platform", plat);
+      formData.append("department", depart);
+      formData.append("nature", nature);
+      formData.append("status", status);
+      formData.append("profile", profile);
+      formData.append("salesPerson", salesPerson);
+      formData.append("amount", amount);
+      formData.append("clientName", clientName);
+      formData.append("description", description);
+
+      console.log(formData);
+
+      const response = await axios.post(`${api}/api/projects/submit`, formData);
+      hideLoadingIndicator();
       if (response.status === 200 && response.data.success) {
-        console.log(response);
-        console.log("Project Posted Successfully")
-        alert("Project Posted Successfully");
+        alert("Project Uploaded Successflly!")
       }
+
     } catch (error) {
-      console.log("Error in posting Project", error)
-      // alert(error.message)
+
+      alert("Error in posting Project: " + error.message);
+      console.error("Error in posting Project", error);
     }
   }
 
-  console.log(formData.platform);
+  function showLoadingIndicator() {
+    document.getElementById("loading-overlay").style.display = "block";
+  }
+
+  function hideLoadingIndicator() {
+    document.getElementById("loading-overlay").style.display = "none";
+  }
+
+
+
 
   return (
     <>
@@ -135,235 +138,220 @@ const Projects = () => {
               <h1 className='text-2xl md:text-3xl lg:text-4xl lg:font-semibold text-slate-500 my-5'>Upload a Project</h1>
               <div>
                 {/* form start */}
-                <form>
+                <form enctype="multipart/form-data">
 
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 text-center lg:text-start">
-                    {/* 1 */}
-                    <div>
-                      <div className="mb-3">
-                        <label
-                          htmlFor="ID"
-                          className="block text-sm font-medium leading-6 text-gray-900"
-                        >
-                          ID:
-                        </label>
-                        <input
-                          type="number"
-                          className={"block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 focus:outline-none ring-gray-300 ring-1 ring-inset placeholder:text-gray-400 sm:text-sm sm:leading-6"}
-                          id="ID"
-                          name="id"
-                          value={formData.id}
-                          onChange={handleInputChange}
-
-                        />
-                      </div>
-                      <div className="mb-3">
-                        <label
-                          htmlFor="startDate"
-                          className="block text-sm font-medium leading-6 text-gray-900"
-                        >
-                          Start Date:
-                        </label>
-                        <input
-                          type="date"
-                          className={"block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 focus:outline-none ring-gray-300 ring-1 ring-inset placeholder:text-gray-400 sm:text-sm sm:leading-6"}
-                          id="startDate"
-                          name="startDate"
-                          value={formData.startDate}
-                          onChange={handleInputChange}
-
-                        />
-                      </div>
-                      <div className="mb-3">
-                        <label
-                          htmlFor="clientName"
-                          className="block text-sm font-medium leading-6 text-gray-900"
-                        >
-                          Client Name:
-                        </label>
-                        <input
-                          type="text"
-                          className={"block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 focus:outline-none ring-gray-300 ring-1 ring-inset placeholder:text-gray-400 sm:text-sm sm:leading-6"}
-                          id="clientName"
-                          name="clientName"
-                          value={formData.clientName}
-                          onChange={handleInputChange}
-
-                        />
-                      </div>
-                      <div className="mb-3">
-                        <label
-                          htmlFor="platform"
-                          className="block text-sm font-medium leading-6 text-gray-900"
-                        >
-                          Platform:
-                        </label>
-                        <MySelect
-                          options={platform}
-                          value={formData.platform}
-                          onChange={(selectedOption) =>
-                            setFormData({ ...formData, platform: selectedOption })
-                          }
-                          id="platformDropdown"
-                        />
-
-                      </div>
-                      <div className="mb-3">
-                        <label
-                          htmlFor="salesPerson"
-                          className="block text-sm font-medium leading-6 text-gray-900"
-                        >
-                          Sales Person:
-                        </label>
-                        <input
-                          type="text"
-                          className={"block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 focus:outline-none ring-gray-300 ring-1 ring-inset placeholder:text-gray-400 sm:text-sm sm:leading-6"}
-                          id="salesPerson"
-                          name="salesPerson"
-                          value={formData.salesPerson}
-                          onChange={handleInputChange}
-
-                        />
-                      </div>
-                      <div className="mb-3">
-                        <label
-                          htmlFor="attachments"
-                          className="block text-sm font-medium leading-6 text-gray-900"
-                        >
-                          Attachments:
-                        </label>
-                        <input
-                          type="file"
-                          className={"block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 focus:outline-none ring-gray-300 ring-1 ring-inset placeholder:text-gray-400 sm:text-sm sm:leading-6"}
-                          id="attachments"
-                          name="attachments"
-                          value={formData.attachments}
-                          onChange={handleInputChange}
-                        />
-                      </div>
+                    <div className="mb-3">
+                      <label
+                        htmlFor="ID"
+                        className="block text-sm font-medium leading-6 text-gray-900"
+                      >
+                        ID <span className='text-red-500'>*</span>
+                      </label>
+                      <input
+                        type="number"
+                        className={"block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 focus:outline-none ring-gray-300 ring-1 ring-inset placeholder:text-gray-400 sm:text-sm sm:leading-6"}
+                        id="ID"
+                        name="id"
+                        value={id}
+                      />
                     </div>
+                    <div className="mb-3">
+                      <label
+                        htmlFor="name"
+                        className="block text-sm font-medium leading-6 text-gray-900"
+                      >
+                        Title <span className='text-red-500'>*</span>
+                      </label>
+                      <input
+                        type="text"
+                        className={"block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 focus:outline-none ring-gray-300 ring-1 ring-inset placeholder:text-gray-400 sm:text-sm sm:leading-6"}
+                        id="title"
+                        name="title"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
 
-                    {/* 2 */}
-                    <div>
-                      <div className="mb-3">
-                        <label
-                          htmlFor="profile"
-                          className="block text-sm font-medium leading-6 text-gray-900"
-                        >
-                          Profile:
-                        </label>
-                        <input
-                          type="text"
-                          className={"block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 focus:outline-none ring-gray-300 ring-1 ring-inset placeholder:text-gray-400 sm:text-sm sm:leading-6"}
-                          id="profile"
-                          name="profile"
-                          value={formData.profile}
-                          onChange={handleInputChange}
+                      />
+                    </div>
+                    <div className="mb-3">
+                      <label
+                        htmlFor="startDate"
+                        className="block text-sm font-medium leading-6 text-gray-900"
+                      >
+                        Start Date <span className='text-red-500'>*</span>
+                      </label>
+                      <input
+                        type="text"
+                        className={"block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 focus:outline-none ring-gray-300 ring-1 ring-inset placeholder:text-gray-400 sm:text-sm sm:leading-6"}
+                        id="startDate"
+                        name="startDate"
+                        placeholder='YYYY-MM-DD'
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
+                      />
+                      {!isValidDateFormat(startDate) && <p className="text-red-500 text-xs mt-1">Please enter a valid date in the format YYYY-MM-DD</p>}
+                    </div>
+                    <div className="mb-3">
+                      <label
+                        htmlFor="delieveryDate"
+                        className="block text-sm font-medium leading-6 text-gray-900"
+                      >
+                        Delievery Date <span className='text-red-500'>*</span>
+                      </label>
+                      <input
+                        type="text"
+                        className={"block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 focus:outline-none ring-gray-300 ring-1 ring-inset placeholder:text-gray-400 sm:text-sm sm:leading-6"}
+                        id="delieveryDate"
+                        name="deliveryDate"
+                        placeholder='YYYY-MM-DD'
+                        value={deliveryDate}
+                        onChange={(e) => setDeliveryDate(e.target.value)}
+                      />
+                      {!isValidDateFormat(deliveryDate) && <p className="text-red-500 text-xs mt-1">Please enter a valid date in the format YYYY-MM-DD</p>}
+                    </div>
+                    <div className="mb-3">
+                      <label
+                        htmlFor="clientName"
+                        className="block text-sm font-medium leading-6 text-gray-900"
+                      >
+                        Client Name <span className='text-red-500'>*</span>
+                      </label>
+                      <input
+                        type="text"
+                        className={"block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 focus:outline-none ring-gray-300 ring-1 ring-inset placeholder:text-gray-400 sm:text-sm sm:leading-6"}
+                        id="clientName"
+                        name="clientName"
+                        value={clientName}
+                        onChange={(e) => setClientName(e.target.value)}
 
-                        />
-                      </div>
-                      <div className="mb-3">
-                        <label
-                          htmlFor="delieveryDate"
-                          className="block text-sm font-medium leading-6 text-gray-900"
-                        >
-                          Delievery Date:
-                        </label>
-                        <input
-                          type="date"
-                          className={"block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 focus:outline-none ring-gray-300 ring-1 ring-inset placeholder:text-gray-400 sm:text-sm sm:leading-6"}
-                          id="delieveryDate"
-                          name="deleiveryDate"
-                          value={formData.deleiveryDate}
-                          onChange={handleInputChange}
+                      />
+                    </div>
+                    <div className="mb-3">
+                      <label htmlFor="dropdown" className="block text-sm font-medium leading-6 text-gray-900">Project Nature <span className='text-red-500'>*</span></label>
+                      <select id="dropdown" className='w-full border p-2 rounded' name='nature' value={nature} onChange={(e) => setNature(e.target.value)}>
+                        <option className='m-5' value="">Select</option>
+                        {
+                          projectNature.map((item, index) => (
+                            <option key={index} className='m-5' value={item.label}>{item.label}</option>
+                          ))
+                        }
+                      </select>
+                    </div>
+                    <div className="mb-3">
+                      <label
+                        htmlFor="salesPerson"
+                        className="block text-sm font-medium leading-6 text-gray-900"
+                      >
+                        Sales Person <span className='text-red-500'>*</span>
+                      </label>
+                      <input
+                        type="text"
+                        className={"block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 focus:outline-none ring-gray-300 ring-1 ring-inset placeholder:text-gray-400 sm:text-sm sm:leading-6"}
+                        id="salesPerson"
+                        name="salesPerson"
+                        value={salesPerson}
+                        onChange={(e) => setSalesPerson(e.target.value)}
 
-                        />
-                      </div>
-                      <div className="mb-3">
-                        <label
-                          htmlFor="name"
-                          className="block text-sm font-medium leading-6 text-gray-900"
-                        >
-                          Title:
-                        </label>
-                        <input
-                          type="text"
-                          className={"block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 focus:outline-none ring-gray-300 ring-1 ring-inset placeholder:text-gray-400 sm:text-sm sm:leading-6"}
-                          id="title"
-                          name="title"
-                          value={formData.title}
-                          onChange={handleInputChange}
+                      />
+                    </div>
+                    <div className="mb-3">
+                      <label
+                        htmlFor="attachments"
+                        className="block text-sm font-medium leading-6 text-gray-900"
+                      >
+                        Attachments
+                      </label>
+                      <input
+                        type="file"
+                        className={"block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 focus:outline-none ring-gray-300 ring-1 ring-inset placeholder:text-gray-400 sm:text-sm sm:leading-6"}
+                        id="attachments"
+                        name="attachments"
+                        onChange={(e) => setAttachments(e.target.files[0])}
+                      />
+                    </div>
+                    <div className="mb-3">
+                      <label
+                        htmlFor="profile"
+                        className="block text-sm font-medium leading-6 text-gray-900"
+                      >
+                        Profile <span className='text-red-500'>*</span>
+                      </label>
+                      <input
+                        type="text"
+                        className={"block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 focus:outline-none ring-gray-300 ring-1 ring-inset placeholder:text-gray-400 sm:text-sm sm:leading-6"}
+                        id="profile"
+                        name="profile"
+                        value={profile}
+                        onChange={(e) => setProfile(e.target.value)}
 
-                        />
-                      </div>
-                      <div className="mb-3">
-                        <label
-                          htmlFor="department"
-                          className="block text-sm font-medium leading-6 text-gray-900"
-                        >
-                          Department:
-                        </label>
-                        <MySelect
-                          options={department}
-                          value={formData.department}
-                          onChange={(selectedOption) =>
-                            setFormData({ ...formData, department: selectedOption })
-                          }
-                          id="departmentDropdown"
-                        />
+                      />
+                    </div>
+                    <div className="mb-3">
+                      <label htmlFor="depart" className="block text-sm font-medium leading-6 text-gray-900">Department <span className='text-red-500'>*</span></label>
+                      <select id="depart" className='w-full border p-2 rounded' name='depart' value={depart} onChange={(e) => setDepart(e.target.value)}>
+                        <option className='m-5' value="">Select</option>
+                        {
+                          department.map((item, index) => (
+                            <option key={index} className='m-5' value={item.label}>{item.label}</option>
+                          ))
+                        }
+                      </select>
+                    </div>
+                    <div className="mb-3">
+                      <label
+                        htmlFor="amount"
+                        className="block text-sm font-medium leading-6 text-gray-900"
+                      >
+                        Amount <span className='text-red-500'>*</span>
+                      </label>
+                      <input
+                        type="number"
+                        className={"block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 focus:outline-none ring-gray-300 ring-1 ring-inset placeholder:text-gray-400 sm:text-sm sm:leading-6"}
+                        id="amount"
+                        name="amount"
+                        value={amount}
+                        onChange={(e) => setAmount(e.target.value)}
 
-                      </div>
-                      <div className="mb-3">
-                        <label
-                          htmlFor="amount"
-                          className="block text-sm font-medium leading-6 text-gray-900"
-                        >
-                          Amount:
-                        </label>
-                        <input
-                          type="number"
-                          className={"block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 focus:outline-none ring-gray-300 ring-1 ring-inset placeholder:text-gray-400 sm:text-sm sm:leading-6"}
-                          id="amount"
-                          name="amount"
-                          value={formData.amount}
-                          onChange={handleInputChange}
-
-                        />
-                      </div>
-                      <div className="mb-3">
-                        <label
-                          htmlFor="nature"
-                          className="block text-sm font-medium leading-6 text-gray-900"
-                        >
-                          Nature of Work:
-                        </label>
-                        <MySelect
-                          options={projectNature}
-                          value={formData.nature}
-                          onChange={(selectedOption) =>
-                            setFormData({ ...formData, nature: selectedOption })
-                          }
-                          id="natureDropdown"
-                        />
-                      </div>
+                      />
+                    </div>
+                    <div className="mb-3">
+                      <label htmlFor="plat" className="block text-sm font-medium leading-6 text-gray-900">Platform <span className='text-red-500'>*</span></label>
+                      <select id="plat" className='w-full border p-2 rounded' name='plat' value={plat} onChange={(e) => setPlat(e.target.value)}>
+                        <option className='m-5' value="">Select</option>
+                        {
+                          platform.map((item, index) => (
+                            <option key={index} className='m-5' value={item.label}>{item.label}</option>
+                          ))
+                        }
+                      </select>
                     </div>
                   </div>
 
-                  {/* description */}
+                  <div className="mb-3">
+                    <label htmlFor="status" className="block text-sm font-medium leading-6 text-gray-900">Project Status <span className='text-red-500'>*</span></label>
+                    <select id="status" className='w-full border p-2 rounded' name='status' value={status} onChange={(e) => setStatus(e.target.value)}>
+                      <option className='m-5' value="">Select</option>
+                      {
+                        projectStatus.map((item, index) => (
+                          <option key={index} className='m-5' value={item}>{item}</option>
+                        ))
+                      }
+                    </select>
+                  </div>
+
                   <div className="mb-3">
                     <label
                       htmlFor="description"
                       className="block text-sm font-medium leading-6 text-gray-900"
                     >
-                      Description:
+                      Description <span className='text-red-500'>*</span>
                     </label>
                     <textarea
                       className={"block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 focus:outline-none ring-gray-300 ring-1 ring-inset placeholder:text-gray-400 sm:text-sm sm:leading-6"}
                       name="description"
                       id="description"
-                      value={formData.description}
-                      onChange={handleInputChange}
-
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
                     ></textarea>
                   </div>
 
@@ -371,10 +359,14 @@ const Projects = () => {
                 {/* form end */}
 
                 {/* submit button */}
-                <div className="flex justify-center my-10">
-                  <button onClick={handleSubmit} className="text-white w-full lg:w-1/3 bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg">
+                <div className="flex justify-center mt-10">
+                  <button type='submit' onClick={handleSubmit} className="text-white w-full lg:w-1/3 bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg">
                     Submit
                   </button>
+                  <br />
+                </div>
+                <div className='flex justify-center'>
+                  <span className='text-red-500 text-[15px] hidden' id='loading-overlay'>Uploading...</span>
                 </div>
               </div>
             </div>

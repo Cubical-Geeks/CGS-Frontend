@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import api from "../Components/Api";
 
 const LoginProduction = () => {
   const [username, setUsername] = useState("");
@@ -9,7 +10,7 @@ const LoginProduction = () => {
   const handleLogin = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:4000/api/productionUser/login",
+        `${api}/api/productionUser/login`,
         {
           username: username,
           password: password,
@@ -31,6 +32,7 @@ const LoginProduction = () => {
     } catch (error) {
       console.error("Error logging in:", error);
       setAuthError("Error logging in");
+      alert(error.message); 
     }
   };
 
